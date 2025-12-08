@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
-import Link from 'next/link'
+import { motion } from 'framer-motion'
+import Layout from '@/components/Layout'
 import ReactFlow, {
   Node,
   Edge,
@@ -20,6 +21,15 @@ import { ImageGenNode } from '@/components/ImageGenNode'
 import { VideoGenNode } from '@/components/VideoGenNode'
 import { UpscaleNode } from '@/components/UpscaleNode'
 import { OutputNode } from '@/components/OutputNode'
+import {
+  PlayIcon,
+  TrashIcon,
+  ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
+  PlusIcon,
+  DocumentDuplicateIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline'
 
 const nodeTypes: NodeTypes = {
   textNode: TextNode,
@@ -69,10 +79,19 @@ const initialEdges: Edge[] = [
   { id: 'e4-5', source: '4', target: '5', animated: true },
 ]
 
+const nodeTemplates = [
+  { type: 'textNode', label: 'Text Input', icon: '📝' },
+  { type: 'imageGenNode', label: 'Image Generator', icon: '🎨' },
+  { type: 'videoGenNode', label: 'Video Generator', icon: '🎬' },
+  { type: 'upscaleNode', label: 'Upscaler', icon: '⬆️' },
+  { type: 'outputNode', label: 'Output', icon: '📤' },
+]
+
 export default function Lab() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
   const [running, setRunning] = useState(false)
+  const [showNodeMenu, setShowNodeMenu] = useState(false)
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -87,6 +106,7 @@ export default function Lab() {
       data: getDefaultNodeData(type),
     }
     setNodes((nds) => [...nds, newNode])
+    setShowNodeMenu(false)
   }
 
   const getDefaultNodeData = (type: string) => {
@@ -142,7 +162,6 @@ export default function Lab() {
     const workflow = { nodes, edges }
     console.log('Saving workflow:', workflow)
     
-    // Validate workflow first
     try {
       const response = await fetch('/api/workflows/validate', {
         method: 'POST',
@@ -162,111 +181,146 @@ export default function Lab() {
     }
   }
 
+  const handleExport = () => {
+    const workflow = { nodes, edges }
+    const blob = new Blob([JSON.stringify(workflow, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `workflow-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleImport = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'application/json'
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          try {
+            const workflow = JSON.parse(e.target?.result as string)
+            setNodes(workflow.nodes || [])
+            setEdges(workflow.edges || [])
+            alert('✅ Workflow imported successfully!')
+          } catch (error) {
+            alert('❌ Failed to import workflow. Invalid file format.')
+          }
+        }
+        reader.readAsText(file)
+      }
+    }
+    input.click()
+  }
+
   return (
-    <div className="h-screen bg-white flex flex-col">
-      {/* Header */}
-      <header className="bg-gray-100 border-b border-gray-300 flex-shrink-0">
-        <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <Link href="/" className="text-blue-600 hover:text-blue-700 mr-4">
-              ← Back
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Lab Mode</h1>
-            <span className="ml-3 px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
-              Active
-            </span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleClear}
-              className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
-            >
-              Clear
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
-            >
-              Save
-            </button>
-            <button
-              onClick={handleRunAll}
-              disabled={running}
-              className="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:bg-blue-400"
-            >
-              {running ? 'Running...' : 'Run All'}
-            </button>
-          </div>
-        </div>
-      </header>
+    <Layout title="Lab Mode" showSidebar={false}>
+      <div className="h-full flex flex-col">
+        {/* Toolbar */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-effect border-b border-white/10 p-4"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowNodeMenu(!showNodeMenu)}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all"
+              >
+                <PlusIcon className="w-5 h-5" />
+                <span>Add Node</span>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleClear}
+                className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
+              >
+                <TrashIcon className="w-5 h-5" />
+                <span>Clear</span>
+              </motion.button>
 
-      {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-64 bg-gray-50 border-r border-gray-300 p-4 overflow-y-auto flex-shrink-0">
-          <h3 className="font-semibold text-gray-900 mb-4">Add Nodes</h3>
-          <div className="space-y-2">
-            <button
-              onClick={() => handleAddNode('textNode')}
-              className="w-full px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 flex items-center justify-start"
-            >
-              <span className="mr-2">📝</span>
-              Text Prompt
-            </button>
-            <button
-              onClick={() => handleAddNode('imageGenNode')}
-              className="w-full px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 flex items-center justify-start"
-            >
-              <span className="mr-2">🎨</span>
-              Image Generator
-            </button>
-            <button
-              onClick={() => handleAddNode('videoGenNode')}
-              className="w-full px-3 py-2 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 flex items-center justify-start"
-            >
-              <span className="mr-2">🎬</span>
-              Video Generator
-            </button>
-            <button
-              onClick={() => handleAddNode('upscaleNode')}
-              className="w-full px-3 py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 flex items-center justify-start"
-            >
-              <span className="mr-2">⬆️</span>
-              Upscale
-            </button>
-            <button
-              onClick={() => handleAddNode('outputNode')}
-              className="w-full px-3 py-2 bg-gray-700 text-white text-sm rounded hover:bg-gray-800 flex items-center justify-start"
-            >
-              <span className="mr-2">💾</span>
-              Output
-            </button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSave}
+                className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
+              >
+                <DocumentDuplicateIcon className="w-5 h-5" />
+                <span>Validate</span>
+              </motion.button>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleImport}
+                className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
+              >
+                <ArrowUpTrayIcon className="w-5 h-5" />
+                <span>Import</span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleExport}
+                className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
+              >
+                <ArrowDownTrayIcon className="w-5 h-5" />
+                <span>Export</span>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleRunAll}
+                disabled={running}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50"
+              >
+                <PlayIcon className="w-5 h-5" />
+                <span>{running ? 'Running...' : 'Run All'}</span>
+              </motion.button>
+            </div>
           </div>
 
-          <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-            <p className="font-semibold mb-2">💡 How to use:</p>
-            <ul className="space-y-1">
-              <li>• Drag nodes to reposition</li>
-              <li>• Connect node handles</li>
-              <li>• Click nodes to edit (future)</li>
-              <li>• Run All to execute workflow</li>
-              <li>• Save to store graph</li>
-            </ul>
-          </div>
-
-          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded text-xs text-green-800">
-            <p className="font-semibold mb-1">✨ Features:</p>
-            <ul className="space-y-1">
-              <li>• Example workflow loaded</li>
-              <li>• 5 node types available</li>
-              <li>• Fully interactive canvas</li>
-              <li>• Ready for backend API</li>
-            </ul>
-          </div>
-        </div>
+          {/* Node Menu */}
+          {showNodeMenu && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-4 grid grid-cols-5 gap-3"
+            >
+              {nodeTemplates.map((template, index) => (
+                <motion.button
+                  key={template.type}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleAddNode(template.type)}
+                  className="glass-effect rounded-xl p-4 border border-white/10 hover:border-blue-500/50 transition-all"
+                >
+                  <div className="text-3xl mb-2">{template.icon}</div>
+                  <div className="text-sm text-white font-medium">{template.label}</div>
+                </motion.button>
+              ))}
+            </motion.div>
+          )}
+        </motion.div>
 
         {/* Canvas */}
-        <div className="flex-1 bg-gray-50">
+        <div className="flex-1 bg-gradient-to-br from-black via-apple-gray-900 to-black">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -275,32 +329,47 @@ export default function Lab() {
             onConnect={onConnect}
             nodeTypes={nodeTypes}
             fitView
-            attributionPosition="bottom-left"
+            className="bg-transparent"
           >
-            <Controls />
+            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#374151" />
+            <Controls className="glass-effect border border-white/10 rounded-xl overflow-hidden" />
             <MiniMap
+              className="glass-effect border border-white/10 rounded-xl overflow-hidden"
               nodeColor={(node) => {
                 switch (node.type) {
-                  case 'textNode':
-                    return '#3B82F6'
-                  case 'imageGenNode':
-                    return '#10B981'
-                  case 'videoGenNode':
-                    return '#8B5CF6'
-                  case 'upscaleNode':
-                    return '#F59E0B'
-                  case 'outputNode':
-                    return '#374151'
-                  default:
-                    return '#94A3B8'
+                  case 'textNode': return '#3b82f6'
+                  case 'imageGenNode': return '#8b5cf6'
+                  case 'videoGenNode': return '#ec4899'
+                  case 'upscaleNode': return '#10b981'
+                  case 'outputNode': return '#f59e0b'
+                  default: return '#6b7280'
                 }
               }}
-              maskColor="rgb(240, 240, 240, 0.6)"
             />
-            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
           </ReactFlow>
         </div>
+
+        {/* Stats Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-effect border-t border-white/10 p-3"
+        >
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center space-x-6 text-gray-400">
+              <span>Nodes: <span className="text-white font-semibold">{nodes.length}</span></span>
+              <span>Connections: <span className="text-white font-semibold">{edges.length}</span></span>
+              <span className="flex items-center">
+                <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                Ready
+              </span>
+            </div>
+            <div className="text-gray-400">
+              Drag to connect nodes • Shift+Click to select multiple
+            </div>
+          </div>
+        </motion.div>
       </div>
-    </div>
+    </Layout>
   )
 }
