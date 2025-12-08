@@ -50,11 +50,6 @@ source .venv/bin/activate
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-2. Start the server:
-```bash
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
 3. Access the API documentation:
 - Swagger UI: http://localhost:8000/docs
 - ReDoc: http://localhost:8000/redoc

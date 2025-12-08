@@ -18,7 +18,7 @@ Le dossier `.venv` (environnement virtuel Python) a été accidentellement commi
 
 ```bash
 # Récupérer les dernières modifications de GitHub
-git pull origin copilot/debug-app-local-issues
+git pull
 ```
 
 ### Étape 2 : Nettoyer et recréer l'environnement virtuel Python
