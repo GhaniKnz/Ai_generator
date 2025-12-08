@@ -14,7 +14,8 @@ import {
   BookOpenIcon,
   HomeIcon,
   RectangleStackIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  EyeIcon
 } from '@heroicons/react/24/outline'
 
 interface LayoutProps {
@@ -42,6 +43,7 @@ export default function Layout({ children, title, showSidebar = true }: LayoutPr
       items: [
         { name: 'Datasets', path: '/datasets', icon: FolderIcon },
         { name: 'Training', path: '/training', icon: CpuChipIcon },
+        { name: 'Training Monitor', path: '/training-monitor', icon: EyeIcon },
         { name: 'Training Guide', path: '/training-guide', icon: BookOpenIcon },
         { name: 'Data Collection', path: '/data-collection', icon: ArrowDownTrayIcon },
       ]

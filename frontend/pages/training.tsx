@@ -15,7 +15,8 @@ import {
   PlayIcon, 
   XMarkIcon, 
   BookOpenIcon,
-  PlusIcon 
+  PlusIcon,
+  EyeIcon
 } from '@heroicons/react/24/outline'
 
 interface TrainingJob {
@@ -150,6 +151,13 @@ export default function Training() {
             <p className="text-gray-400 mt-1">Create and manage AI model training</p>
           </div>
           <div className="flex items-center space-x-3">
+            <Link
+              href="/training-monitor"
+              className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
+            >
+              <EyeIcon className="w-5 h-5" />
+              <span>Monitor en Temps Réel</span>
+            </Link>
             <Link
               href="/training-guide"
               className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
