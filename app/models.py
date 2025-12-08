@@ -87,7 +87,7 @@ class Asset(Base):
     path = Column(String(500), nullable=False)
     thumbnail_path = Column(String(500), nullable=True)
     prompt = Column(Text, nullable=True)
-    metadata = Column(JSON, default=dict)
+    asset_metadata = Column(JSON, default=dict)  # Renamed from metadata
     tags = Column(JSON, default=list)
     width = Column(Integer, nullable=True)
     height = Column(Integer, nullable=True)
@@ -129,11 +129,12 @@ class Dataset(Base):
     type = Column(String(50), nullable=False)  # image, video, mixed
     path = Column(String(500), nullable=False)
     num_items = Column(Integer, default=0)
-    metadata = Column(JSON, default=dict)
+    dataset_metadata = Column(JSON, default=dict)  # Renamed from metadata
     tags = Column(JSON, default=list)
     is_public = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 
 class TrainingJob(Base):

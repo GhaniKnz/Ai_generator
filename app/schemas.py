@@ -168,15 +168,14 @@ class JobState(BaseModel):
     error: Optional[str] = None
     logs: List[str] = Field(default_factory=list)
 
-    class Config:
-        allow_mutation = True
+    model_config = {"from_attributes": True}
 
 
 # ============= User & Auth Models =============
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
-    email: str = Field(..., regex=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+    email: str = Field(..., pattern=r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
     password: str = Field(..., min_length=8)
 
 
@@ -188,8 +187,7 @@ class UserResponse(BaseModel):
     is_admin: bool
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 class Token(BaseModel):
@@ -224,8 +222,7 @@ class ModelResponse(BaseModel):
     version: Optional[str]
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 # ============= Asset Management =============
@@ -242,8 +239,7 @@ class AssetResponse(BaseModel):
     duration: Optional[float]
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 # ============= Project & Lab Mode =============
@@ -290,8 +286,7 @@ class ProjectResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 # ============= Training & Datasets =============
@@ -313,8 +308,7 @@ class DatasetResponse(BaseModel):
     tags: List[str]
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 class TrainingConfig(BaseModel):
@@ -323,7 +317,7 @@ class TrainingConfig(BaseModel):
     num_epochs: int = Field(10, ge=1, le=1000)
     max_steps: Optional[int] = Field(None, ge=1)
     gradient_accumulation_steps: int = Field(1, ge=1, le=32)
-    mixed_precision: str = Field("fp16", regex="^(no|fp16|bf16)$")
+    mixed_precision: str = Field("fp16", pattern="^(no|fp16|bf16)$")
     use_8bit_adam: bool = Field(False)
     lora_rank: int = Field(4, ge=1, le=128)
     lora_alpha: int = Field(32, ge=1, le=256)
@@ -332,7 +326,7 @@ class TrainingConfig(BaseModel):
 class TrainingJobCreate(BaseModel):
     dataset_id: int
     base_model_id: int
-    type: str = Field("lora", regex="^(lora|dreambooth|full)$")
+    type: str = Field("lora", pattern="^(lora|dreambooth|full)$")
     config: TrainingConfig
 
 
@@ -347,5 +341,4 @@ class TrainingJobResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
