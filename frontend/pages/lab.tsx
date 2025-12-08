@@ -108,9 +108,27 @@ export default function Lab() {
 
   const handleRunAll = async () => {
     setRunning(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setRunning(false)
-    alert('Workflow executed! (This is a demo - connect to backend API for real execution)')
+    try {
+      const response = await fetch('/api/workflows/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nodes, edges }),
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('Workflow execution result:', data)
+        alert(`✅ Workflow executed successfully!\n\n${data.message}\n\nResults: ${JSON.stringify(data.results, null, 2)}`)
+      } else {
+        const error = await response.json()
+        alert(`❌ Execution failed: ${error.detail || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error executing workflow:', error)
+      alert('❌ Failed to execute workflow. Check console for details.')
+    } finally {
+      setRunning(false)
+    }
   }
 
   const handleClear = () => {
@@ -120,10 +138,28 @@ export default function Lab() {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const workflow = { nodes, edges }
     console.log('Saving workflow:', workflow)
-    alert('Workflow saved! Check console for graph data.')
+    
+    // Validate workflow first
+    try {
+      const response = await fetch('/api/workflows/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(workflow),
+      })
+      
+      const data = await response.json()
+      if (data.status === 'valid') {
+        alert(`✅ Workflow is valid!\n\n${data.message}\n\nExecution order: ${data.execution_order}`)
+      } else {
+        alert(`⚠️ Workflow has issues:\n\n${data.message}`)
+      }
+    } catch (error) {
+      console.error('Error validating workflow:', error)
+      alert('Workflow data logged to console')
+    }
   }
 
   return (
