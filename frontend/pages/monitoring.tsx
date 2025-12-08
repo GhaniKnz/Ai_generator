@@ -240,7 +240,7 @@ export default function MonitoringDashboard() {
             transition={{ delay: 0.5 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10"
           >
-            <h3 className="text-xl font-semibold text-white mb-4">Jobs Over Time</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Tâches au Fil du Temps</h3>
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={metricsHistory}>
                 <defs>
@@ -278,7 +278,7 @@ export default function MonitoringDashboard() {
             transition={{ delay: 0.6 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10"
           >
-            <h3 className="text-xl font-semibold text-white mb-4">Generation Time Trend</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Tendance du Temps de Génération</h3>
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={metricsHistory}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -313,7 +313,7 @@ export default function MonitoringDashboard() {
             transition={{ delay: 0.7 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10"
           >
-            <h3 className="text-xl font-semibold text-white mb-4">Job Status Distribution</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Distribution des Statuts de Tâches</h3>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
@@ -349,7 +349,7 @@ export default function MonitoringDashboard() {
             transition={{ delay: 0.8 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10"
           >
-            <h3 className="text-xl font-semibold text-white mb-4">Generation Types</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Types de Génération</h3>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={generationData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -381,7 +381,7 @@ export default function MonitoringDashboard() {
             transition={{ delay: 0.9 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10"
           >
-            <h2 className="text-xl font-bold text-white mb-4">Generation Stats</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Statistiques de Génération</h2>
             <div className="space-y-4">
               <motion.div
                 whileHover={{ x: 4 }}
@@ -389,7 +389,7 @@ export default function MonitoringDashboard() {
               >
                 <span className="text-gray-300 flex items-center">
                   <span className="text-2xl mr-3">🎨</span>
-                  Images Generated
+                  Images Générées
                 </span>
                 <span className="text-2xl font-bold text-green-400">{usage.total_images_generated}</span>
               </motion.div>
@@ -399,7 +399,7 @@ export default function MonitoringDashboard() {
               >
                 <span className="text-gray-300 flex items-center">
                   <span className="text-2xl mr-3">🎬</span>
-                  Videos Generated
+                  Vidéos Générées
                 </span>
                 <span className="text-2xl font-bold text-blue-400">{usage.total_videos_generated}</span>
               </motion.div>
@@ -409,7 +409,7 @@ export default function MonitoringDashboard() {
               >
                 <span className="text-gray-300 flex items-center">
                   <span className="text-2xl mr-3">🔗</span>
-                  Workflows Executed
+                  Workflows Exécutés
                 </span>
                 <span className="text-2xl font-bold text-purple-400">{usage.total_workflows_executed}</span>
               </motion.div>
@@ -422,7 +422,7 @@ export default function MonitoringDashboard() {
             transition={{ delay: 1.0 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10"
           >
-            <h2 className="text-xl font-bold text-white mb-4">Training & Data Stats</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Statistiques d'Entraînement & Données</h2>
             <div className="space-y-4">
               <motion.div
                 whileHover={{ x: 4 }}
@@ -430,7 +430,7 @@ export default function MonitoringDashboard() {
               >
                 <span className="text-gray-300 flex items-center">
                   <span className="text-2xl mr-3">📊</span>
-                  Datasets Created
+                  Ensembles de Données Créés
                 </span>
                 <span className="text-2xl font-bold text-yellow-400">{usage.total_datasets_created}</span>
               </motion.div>
@@ -440,7 +440,7 @@ export default function MonitoringDashboard() {
               >
                 <span className="text-gray-300 flex items-center">
                   <span className="text-2xl mr-3">🏋️</span>
-                  Training Jobs
+                  Tâches d'Entraînement
                 </span>
                 <span className="text-2xl font-bold text-orange-400">{usage.total_training_jobs}</span>
               </motion.div>
@@ -450,7 +450,7 @@ export default function MonitoringDashboard() {
               >
                 <span className="text-gray-300 flex items-center">
                   <span className="text-2xl mr-3">🌐</span>
-                  Downloads
+                  Téléchargements
                 </span>
                 <span className="text-2xl font-bold text-pink-400">{usage.total_downloads}</span>
               </motion.div>
@@ -466,7 +466,7 @@ export default function MonitoringDashboard() {
             transition={{ delay: 1.1 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10"
           >
-            <h2 className="text-xl font-bold text-white mb-4">Recent Activity</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Activité Récente</h2>
             <div className="space-y-3">
               {recent_activity.map((activity, index) => (
                 <motion.div
@@ -491,7 +491,7 @@ export default function MonitoringDashboard() {
                     activity.status === 'failed' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 
                     'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                   }`}>
-                    {activity.status}
+                    {activity.status === 'completed' ? 'terminée' : activity.status === 'failed' ? 'échouée' : 'en attente'}
                   </span>
                 </motion.div>
               ))}
@@ -504,7 +504,7 @@ export default function MonitoringDashboard() {
             transition={{ delay: 1.2 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10"
           >
-            <h2 className="text-xl font-bold text-white mb-4">Popular Presets</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Préréglages Populaires</h2>
             <div className="space-y-3">
               {popular_presets.map((preset, index) => (
                 <motion.div
