@@ -37,6 +37,9 @@ export default function Home() {
             <Link href="/training" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
               Training
             </Link>
+            <Link href="/data-collection" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
+              Data Collection
+            </Link>
             <div className="border-t border-gray-700 my-2"></div>
             <Link href="/assets" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
               Assets
@@ -112,6 +115,45 @@ export default function Home() {
                   Open Lab
                 </button>
               </div>
+
+              <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h3 className="text-xl font-semibold text-white mb-2">Datasets</h3>
+                <p className="text-gray-400 mb-4">
+                  Manage your training datasets and organize images for fine-tuning.
+                </p>
+                <button
+                  onClick={() => router.push('/datasets')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                >
+                  View Datasets
+                </button>
+              </div>
+
+              <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h3 className="text-xl font-semibold text-white mb-2">Training</h3>
+                <p className="text-gray-400 mb-4">
+                  Create and monitor LoRA/DreamBooth training jobs for custom models.
+                </p>
+                <button
+                  onClick={() => router.push('/training')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                >
+                  Start Training
+                </button>
+              </div>
+
+              <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <h3 className="text-xl font-semibold text-white mb-2">Data Collection</h3>
+                <p className="text-gray-400 mb-4">
+                  Search and download images from Unsplash/Pexels to enrich datasets.
+                </p>
+                <button
+                  onClick={() => router.push('/data-collection')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                >
+                  Collect Data
+                </button>
+              </div>
             </div>
 
             <div className="mt-12 bg-gray-800 p-6 rounded-lg border border-gray-700">
@@ -122,8 +164,10 @@ export default function Home() {
                 <li>✓ Inpainting and outpainting</li>
                 <li>✓ Image upscaling and enhancement</li>
                 <li>✓ Node-based workflow editor (Lab Mode)</li>
-                <li>✓ Custom model training and management</li>
-                <li>✓ Asset library with tagging and organization</li>
+                <li>✓ Custom model training (LoRA/DreamBooth)</li>
+                <li>✓ Dataset management and organization</li>
+                <li>✓ Data collection from Unsplash/Pexels APIs</li>
+                <li>✓ Asset library with tagging and search</li>
                 <li>✓ Project management and templates</li>
               </ul>
             </div>
