@@ -2,12 +2,17 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import Settings, get_settings
+from .database import init_db
 from .jobs import JobQueue, build_job_queue
-from .schemas import JobState, JobStatus, TextToImageRequest
+from .routers import generation, models, projects
 
 
 def create_app(settings: Settings, queue: JobQueue) -> FastAPI:
-    app = FastAPI(title=settings.app_name)
+    app = FastAPI(
+        title=settings.app_name,
+        description="Comprehensive AI Generation Platform for Images, Videos, and More",
+        version="1.0.0",
+    )
 
     app.add_middleware(
         CORSMiddleware,
@@ -17,33 +22,25 @@ def create_app(settings: Settings, queue: JobQueue) -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Include routers
+    app.include_router(generation.router, prefix=settings.api_prefix)
+    app.include_router(models.router, prefix=settings.api_prefix)
+    app.include_router(projects.router, prefix=settings.api_prefix)
+
     @app.on_event("startup")
     async def startup_event() -> None:
+        # Initialize database
+        await init_db()
+        # Start job queue workers
         queue.start()
 
     @app.get("/health")
     async def health() -> dict:
-        return {"status": "ok", "app": settings.app_name}
-
-    @app.post(f"{settings.api_prefix}/jobs/text-to-image", response_model=JobState)
-    async def create_text_to_image_job(
-        body: TextToImageRequest,
-    ) -> JobState:
-        return queue.create_text_to_image_job(body)
-
-    @app.get(f"{settings.api_prefix}/jobs/{{job_id}}", response_model=JobState)
-    async def get_job(job_id: str) -> JobState:
-        job = queue.get_job(job_id)
-        if not job:
-            raise HTTPException(status_code=404, detail="job not found")
-        return job
-
-    @app.get(f"{settings.api_prefix}/jobs", response_model=list[JobState])
-    async def list_jobs(status: JobStatus | None = None) -> list[JobState]:
-        jobs = list(queue.jobs.values())
-        if status:
-            jobs = [job for job in jobs if job.status == status]
-        return sorted(jobs, key=lambda j: j.created_at, reverse=True)
+        return {
+            "status": "ok",
+            "app": settings.app_name,
+            "version": "1.0.0",
+        }
 
     return app
 

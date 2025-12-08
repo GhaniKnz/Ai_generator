@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: ai-generator-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./outputs:/app/outputs
+      - ./models:/app/models
+      - ./datasets:/app/datasets
+    environment:
+      - APP_NAME=AI Generator API
+      - API_PREFIX=/api
+      - OUTPUT_DIR=/app/outputs
+      - MAX_PARALLEL_JOBS=1
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ai-generator-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # Optional: Redis for better job queue management
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: ai-generator-redis
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+
+  # Optional: PostgreSQL for production
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: ai-generator-db
+  #   environment:
+  #     POSTGRES_DB: ai_generator
+  #     POSTGRES_USER: ai_generator
+  #     POSTGRES_PASSWORD: changeme
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data:
