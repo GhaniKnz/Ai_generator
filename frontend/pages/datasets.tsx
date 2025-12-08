@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import FileUpload from '../components/FileUpload'
 
 interface Dataset {
   id: number
@@ -11,9 +12,20 @@ interface Dataset {
   created_at: string
 }
 
+interface UploadedFile {
+  filename: string
+  path: string
+  size: number
+  type: string
+  extracted_files?: string[]
+}
+
 export default function Datasets() {
   const [datasets, setDatasets] = useState<Dataset[]>([])
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [selectedDatasetId, setSelectedDatasetId] = useState<number | null>(null)
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null)
   const [newDataset, setNewDataset] = useState({
     name: '',
     description: '',
@@ -74,6 +86,23 @@ export default function Datasets() {
     } catch (error) {
       console.error('Error deleting dataset:', error)
     }
+  }
+
+  const handleUploadComplete = (files: UploadedFile[]) => {
+    setUploadSuccess(`Successfully uploaded ${files.length} file(s)!`)
+    setTimeout(() => {
+      setUploadSuccess(null)
+      setShowUploadModal(false)
+    }, 2000)
+  }
+
+  const handleUploadError = (error: string) => {
+    alert(`Upload error: ${error}`)
+  }
+
+  const openUploadModal = (datasetId: number) => {
+    setSelectedDatasetId(datasetId)
+    setShowUploadModal(true)
   }
 
   return (
@@ -173,6 +202,12 @@ export default function Datasets() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => openUploadModal(dataset.id)}
+                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                      >
+                        Upload
+                      </button>
                       <Link
                         href={`/training?dataset=${dataset.id}`}
                         className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
@@ -282,6 +317,37 @@ export default function Datasets() {
                 Create
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 rounded-lg max-w-2xl w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-white">Upload Files to Dataset</h2>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {uploadSuccess ? (
+              <div className="bg-green-500/20 border border-green-500 text-green-400 p-4 rounded-lg mb-4">
+                {uploadSuccess}
+              </div>
+            ) : (
+              <FileUpload
+                onUploadComplete={handleUploadComplete}
+                onUploadError={handleUploadError}
+                multiple={true}
+                maxSizeMB={100}
+                extractArchives={true}
+              />
+            )}
           </div>
         </div>
       )}
