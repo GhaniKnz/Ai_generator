@@ -11,15 +11,17 @@ This is a comprehensive AI generation platform built according to French require
 #### Backend API (FastAPI)
 - **Framework**: FastAPI 0.110+ with Python 3.11+
 - **Database**: SQLAlchemy with SQLite (production-ready for PostgreSQL)
-- **API Endpoints**:
+- **API Endpoints** (13 total):
   - `/api/generate/text-to-image` - Generate images from text
   - `/api/generate/text-to-video` - Generate videos from text
   - `/api/generate/image-to-video` - Animate images
   - `/api/generate/image-to-image` - Transform images
   - `/api/generate/inpaint` - Inpaint image regions
   - `/api/generate/upscale` - Upscale images
-  - `/api/models/*` - Model management
-  - `/api/projects/*` - Project/Lab mode management
+  - `/api/models/*` - Model management (5 endpoints)
+  - `/api/projects/*` - Project/Lab mode management (4 endpoints)
+  - `/api/workflows/execute` - Execute workflow graphs
+  - `/api/workflows/validate` - Validate workflow graphs
   - `/health` - Health check endpoint
 
 #### Database Models
@@ -132,6 +134,9 @@ This is a comprehensive AI generation platform built according to French require
 - Job queue processing correctly
 - Job status tracking functional
 - Database initialization working
+- **Workflow execution working**
+- **Workflow validation working**
+- **Topological sorting functional**
 
 ### API Endpoints Tested ✅
 ```bash
@@ -150,7 +155,46 @@ Response: Job created with ID, status: pending
 # List Jobs
 GET /api/generate/
 Response: Array of jobs with status and outputs
+
+# Execute Workflow
+POST /api/workflows/execute
+Response: {"status": "success", "message": "Executed 5 nodes", "results": {...}}
+
+# Validate Workflow
+POST /api/workflows/validate
+Response: {"status": "valid", "execution_order": "1,2,3,4,5"}
 ```
+
+### ✅ Phase 3: Lab Mode (COMPLETE!)
+
+#### Fully Functional Node-Based Canvas
+- **React Flow Integration**: Professional canvas editor with pan, zoom, minimap
+- **5 Custom Node Types**:
+  - 📝 Text Prompt Node (Blue) - Input prompts
+  - 🎨 Image Generator Node (Green) - Generate images
+  - 🎬 Video Generator Node (Purple) - Generate videos  
+  - ⬆️ Upscale Node (Orange) - Upscale images/videos
+  - 💾 Output Node (Gray) - Final output destination
+- **Interactive Features**:
+  - Drag and drop nodes to reposition
+  - Connect node handles with edges
+  - Animated connections
+  - Add new nodes from sidebar
+  - MiniMap for navigation
+  - Grid background for alignment
+  - Zoom and pan controls
+- **Workflow Controls**:
+  - **Run All**: Executes workflow via backend API
+  - **Save**: Validates workflow and shows execution order
+  - **Clear**: Remove all nodes and edges
+- **Backend Integration**:
+  - Workflow execution with topological sorting
+  - Cycle detection for invalid workflows
+  - Real API calls with results display
+  - Validation endpoint for graph correctness
+- **Example Workflow**: Pre-loaded pipeline showing text→image→video→upscale→output
+
+See [PHASE3_LAB_MODE.md](PHASE3_LAB_MODE.md) for complete details.
 
 ## Technology Stack
 
@@ -165,6 +209,7 @@ Response: Array of jobs with status and outputs
 ### Frontend
 - Next.js 14
 - React 18
+- React Flow 11.10 (for Lab Mode)
 - TypeScript 5
 - TailwindCSS 3
 - Axios for API calls
