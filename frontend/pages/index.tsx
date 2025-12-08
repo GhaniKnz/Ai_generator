@@ -9,7 +9,8 @@ import {
   CpuChipIcon, 
   Cog6ToothIcon,
   ChartBarIcon,
-  CloudArrowUpIcon
+  CloudArrowUpIcon,
+  BookOpenIcon
 } from '@heroicons/react/24/outline'
 
 export default function Home() {
@@ -111,6 +112,11 @@ export default function Home() {
               className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
               <CpuChipIcon className="w-5 h-5" />
               <span>Training</span>
+            </Link>
+            <Link href="/training-guide" 
+              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
+              <BookOpenIcon className="w-5 h-5" />
+              <span>Training Guide</span>
             </Link>
             <Link href="/data-collection" 
               className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
