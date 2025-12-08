@@ -9,7 +9,8 @@ import {
   CpuChipIcon, 
   Cog6ToothIcon,
   ChartBarIcon,
-  CloudArrowUpIcon
+  CloudArrowUpIcon,
+  BookOpenIcon
 } from '@heroicons/react/24/outline'
 
 export default function Home() {
@@ -17,43 +18,43 @@ export default function Home() {
 
   const features = [
     {
-      title: 'Text to Image',
-      description: 'Generate stunning images from text descriptions with advanced AI models.',
+      title: 'Texte vers Image',
+      description: 'Générez des images époustouflantes à partir de descriptions textuelles avec des modèles IA avancés.',
       icon: PhotoIcon,
       color: 'from-blue-500 to-cyan-500',
       path: '/text-to-image'
     },
     {
-      title: 'Text to Video',
-      description: 'Create dynamic videos from text prompts with camera controls.',
+      title: 'Texte vers Vidéo',
+      description: 'Créez des vidéos dynamiques à partir de prompts textuels avec contrôles de caméra.',
       icon: VideoCameraIcon,
       color: 'from-purple-500 to-pink-500',
       path: '/text-to-video'
     },
     {
-      title: 'Image to Video',
-      description: 'Animate your images with customizable motion and movements.',
+      title: 'Image vers Vidéo',
+      description: 'Animez vos images avec des mouvements et animations personnalisables.',
       icon: CloudArrowUpIcon,
       color: 'from-green-500 to-emerald-500',
       path: '/image-to-video'
     },
     {
-      title: 'Lab Mode',
-      description: 'Node-based canvas for complex multi-step AI workflows.',
+      title: 'Mode Lab',
+      description: 'Canvas basé sur des nœuds pour des workflows IA multi-étapes complexes.',
       icon: BeakerIcon,
       color: 'from-orange-500 to-red-500',
       path: '/lab'
     },
     {
-      title: 'Datasets',
-      description: 'Manage and organize your training datasets efficiently.',
+      title: 'Ensembles de Données',
+      description: 'Gérez et organisez vos ensembles de données d\'entraînement efficacement.',
       icon: FolderIcon,
       color: 'from-indigo-500 to-blue-500',
       path: '/datasets'
     },
     {
-      title: 'Training',
-      description: 'Create custom models with LoRA and DreamBooth training.',
+      title: 'Entraînement',
+      description: 'Créez des modèles personnalisés avec l\'entraînement LoRA et DreamBooth.',
       icon: CpuChipIcon,
       color: 'from-yellow-500 to-orange-500',
       path: '/training'
@@ -111,6 +112,19 @@ export default function Home() {
               className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
               <CpuChipIcon className="w-5 h-5" />
               <span>Training</span>
+            </Link>
+            <Link href="/training-monitor" 
+              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span>Training Monitor</span>
+            </Link>
+            <Link href="/training-guide" 
+              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
+              <BookOpenIcon className="w-5 h-5" />
+              <span>Training Guide</span>
             </Link>
             <Link href="/data-collection" 
               className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
