@@ -29,32 +29,32 @@ export default function Layout({ children, title, showSidebar = true }: LayoutPr
 
   const navSections = [
     {
-      title: 'Generate',
+      title: 'Génération',
       items: [
-        { name: 'Home', path: '/', icon: HomeIcon },
-        { name: 'Text to Image', path: '/text-to-image', icon: PhotoIcon },
-        { name: 'Text to Video', path: '/text-to-video', icon: VideoCameraIcon },
-        { name: 'Image to Video', path: '/image-to-video', icon: CloudArrowUpIcon },
-        { name: 'Lab Mode', path: '/lab', icon: BeakerIcon },
+        { name: 'Accueil', path: '/', icon: HomeIcon },
+        { name: 'Texte vers Image', path: '/text-to-image', icon: PhotoIcon },
+        { name: 'Texte vers Vidéo', path: '/text-to-video', icon: VideoCameraIcon },
+        { name: 'Image vers Vidéo', path: '/image-to-video', icon: CloudArrowUpIcon },
+        { name: 'Mode Lab', path: '/lab', icon: BeakerIcon },
       ]
     },
     {
-      title: 'Training',
+      title: 'Entraînement',
       items: [
-        { name: 'Datasets', path: '/datasets', icon: FolderIcon },
-        { name: 'Training', path: '/training', icon: CpuChipIcon },
-        { name: 'Training Monitor', path: '/training-monitor', icon: EyeIcon },
-        { name: 'Training Guide', path: '/training-guide', icon: BookOpenIcon },
-        { name: 'Data Collection', path: '/data-collection', icon: ArrowDownTrayIcon },
+        { name: 'Ensembles de Données', path: '/datasets', icon: FolderIcon },
+        { name: 'Entraînement', path: '/training', icon: CpuChipIcon },
+        { name: 'Moniteur d\'Entraînement', path: '/training-monitor', icon: EyeIcon },
+        { name: 'Guide d\'Entraînement', path: '/training-guide', icon: BookOpenIcon },
+        { name: 'Collection de Données', path: '/data-collection', icon: ArrowDownTrayIcon },
       ]
     },
     {
-      title: 'Management',
+      title: 'Gestion',
       items: [
-        { name: 'Assets', path: '/assets', icon: RectangleStackIcon },
-        { name: 'Models', path: '/models', icon: CpuChipIcon },
-        { name: 'Monitoring', path: '/monitoring', icon: ChartBarIcon },
-        { name: 'Settings', path: '/settings', icon: Cog6ToothIcon },
+        { name: 'Ressources', path: '/assets', icon: RectangleStackIcon },
+        { name: 'Modèles', path: '/models', icon: CpuChipIcon },
+        { name: 'Surveillance', path: '/monitoring', icon: ChartBarIcon },
+        { name: 'Paramètres', path: '/settings', icon: Cog6ToothIcon },
       ]
     }
   ]

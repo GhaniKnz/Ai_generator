@@ -18,43 +18,43 @@ export default function Home() {
 
   const features = [
     {
-      title: 'Text to Image',
-      description: 'Generate stunning images from text descriptions with advanced AI models.',
+      title: 'Texte vers Image',
+      description: 'Générez des images époustouflantes à partir de descriptions textuelles avec des modèles IA avancés.',
       icon: PhotoIcon,
       color: 'from-blue-500 to-cyan-500',
       path: '/text-to-image'
     },
     {
-      title: 'Text to Video',
-      description: 'Create dynamic videos from text prompts with camera controls.',
+      title: 'Texte vers Vidéo',
+      description: 'Créez des vidéos dynamiques à partir de prompts textuels avec contrôles de caméra.',
       icon: VideoCameraIcon,
       color: 'from-purple-500 to-pink-500',
       path: '/text-to-video'
     },
     {
-      title: 'Image to Video',
-      description: 'Animate your images with customizable motion and movements.',
+      title: 'Image vers Vidéo',
+      description: 'Animez vos images avec des mouvements et animations personnalisables.',
       icon: CloudArrowUpIcon,
       color: 'from-green-500 to-emerald-500',
       path: '/image-to-video'
     },
     {
-      title: 'Lab Mode',
-      description: 'Node-based canvas for complex multi-step AI workflows.',
+      title: 'Mode Lab',
+      description: 'Canvas basé sur des nœuds pour des workflows IA multi-étapes complexes.',
       icon: BeakerIcon,
       color: 'from-orange-500 to-red-500',
       path: '/lab'
     },
     {
-      title: 'Datasets',
-      description: 'Manage and organize your training datasets efficiently.',
+      title: 'Ensembles de Données',
+      description: 'Gérez et organisez vos ensembles de données d\'entraînement efficacement.',
       icon: FolderIcon,
       color: 'from-indigo-500 to-blue-500',
       path: '/datasets'
     },
     {
-      title: 'Training',
-      description: 'Create custom models with LoRA and DreamBooth training.',
+      title: 'Entraînement',
+      description: 'Créez des modèles personnalisés avec l\'entraînement LoRA et DreamBooth.',
       icon: CpuChipIcon,
       color: 'from-yellow-500 to-orange-500',
       path: '/training'

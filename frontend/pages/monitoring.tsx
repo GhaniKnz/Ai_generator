@@ -105,7 +105,7 @@ export default function MonitoringDashboard() {
 
   if (loading || !dashboardData) {
     return (
-      <Layout title="Monitoring Dashboard">
+      <Layout title="Tableau de Bord de Surveillance">
         <div className="flex justify-center items-center h-64">
           <motion.div
             animate={{ rotate: 360 }}
@@ -120,21 +120,21 @@ export default function MonitoringDashboard() {
   const { system, usage, uptime_formatted, recent_activity, popular_presets } = dashboardData
 
   const statusData = [
-    { name: 'Completed', value: system.jobs_completed, color: '#10b981' },
-    { name: 'Failed', value: system.jobs_failed, color: '#ef4444' },
-    { name: 'Pending', value: system.jobs_pending, color: '#f59e0b' }
+    { name: 'Terminés', value: system.jobs_completed, color: '#10b981' },
+    { name: 'Échoués', value: system.jobs_failed, color: '#ef4444' },
+    { name: 'En attente', value: system.jobs_pending, color: '#f59e0b' }
   ]
 
   const generationData = [
     { name: 'Images', value: usage.total_images_generated, color: '#3b82f6' },
-    { name: 'Videos', value: usage.total_videos_generated, color: '#8b5cf6' },
+    { name: 'Vidéos', value: usage.total_videos_generated, color: '#8b5cf6' },
     { name: 'Workflows', value: usage.total_workflows_executed, color: '#06b6d4' }
   ]
 
   return (
-    <Layout title="Monitoring Dashboard">
+    <Layout title="Tableau de Bord de Surveillance">
       <Head>
-        <title>Monitoring Dashboard - AI Generator</title>
+        <title>Tableau de Bord de Surveillance - Générateur IA</title>
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -147,10 +147,10 @@ export default function MonitoringDashboard() {
           <div>
             <h2 className="text-3xl font-bold">
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Real-Time Dashboard
+                Tableau de Bord en Temps Réel
               </span>
             </h2>
-            <p className="text-gray-400 mt-1">Monitor your AI generation system</p>
+            <p className="text-gray-400 mt-1">Surveillez votre système de génération IA</p>
           </div>
           <div className="flex items-center space-x-3">
             <motion.button
@@ -163,7 +163,7 @@ export default function MonitoringDashboard() {
                   : 'glass-effect text-gray-300'
               }`}
             >
-              {autoRefresh ? '🔄 Auto-Refresh ON' : '⏸️ Auto-Refresh OFF'}
+              {autoRefresh ? '🔄 Rafraîchissement Auto ACTIVÉ' : '⏸️ Rafraîchissement Auto DÉSACTIVÉ'}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -171,7 +171,7 @@ export default function MonitoringDashboard() {
               onClick={fetchDashboard}
               className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all"
             >
-              🔄 Refresh Now
+              🔄 Rafraîchir Maintenant
             </motion.button>
           </div>
         </motion.div>
@@ -185,9 +185,9 @@ export default function MonitoringDashboard() {
             whileHover={{ y: -4 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10 cursor-default"
           >
-            <div className="text-sm text-gray-400 mb-2">System Uptime</div>
+            <div className="text-sm text-gray-400 mb-2">Temps de Fonctionnement</div>
             <div className="text-3xl font-bold text-green-400 mb-1">{uptime_formatted}</div>
-            <div className="text-xs text-gray-500">Running smoothly</div>
+            <div className="text-xs text-gray-500">Fonctionne correctement</div>
           </motion.div>
           
           <motion.div
@@ -197,10 +197,10 @@ export default function MonitoringDashboard() {
             whileHover={{ y: -4 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10 cursor-default"
           >
-            <div className="text-sm text-gray-400 mb-2">Total Jobs</div>
+            <div className="text-sm text-gray-400 mb-2">Total des Tâches</div>
             <div className="text-3xl font-bold text-blue-400 mb-1">{system.total_jobs}</div>
             <div className="text-xs text-gray-500">
-              ✅ {system.jobs_completed} completed · ❌ {system.jobs_failed} failed
+              ✅ {system.jobs_completed} terminées · ❌ {system.jobs_failed} échouées
             </div>
           </motion.div>
           
@@ -211,9 +211,9 @@ export default function MonitoringDashboard() {
             whileHover={{ y: -4 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10 cursor-default"
           >
-            <div className="text-sm text-gray-400 mb-2">Pending Jobs</div>
+            <div className="text-sm text-gray-400 mb-2">Tâches en Attente</div>
             <div className="text-3xl font-bold text-yellow-400 mb-1">{system.jobs_pending}</div>
-            <div className="text-xs text-gray-500">In queue</div>
+            <div className="text-xs text-gray-500">En file d'attente</div>
           </motion.div>
           
           <motion.div
@@ -223,11 +223,11 @@ export default function MonitoringDashboard() {
             whileHover={{ y: -4 }}
             className="glass-effect rounded-apple-lg p-6 border border-white/10 cursor-default"
           >
-            <div className="text-sm text-gray-400 mb-2">Avg Generation Time</div>
+            <div className="text-sm text-gray-400 mb-2">Temps Moyen de Génération</div>
             <div className="text-3xl font-bold text-purple-400 mb-1">
               {system.avg_generation_time.toFixed(2)}s
             </div>
-            <div className="text-xs text-gray-500">Per job</div>
+            <div className="text-xs text-gray-500">Par tâche</div>
           </motion.div>
         </div>
 
