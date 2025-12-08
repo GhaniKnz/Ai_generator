@@ -1,4 +1,5 @@
 """Workflow execution router for Lab mode."""
+from collections import deque
 from typing import Dict, List
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -6,22 +7,11 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 
 
-class NodeData(BaseModel):
-    """Node data structure."""
-    label: str
-    prompt: str | None = None
-    model: str | None = None
-    duration: float | None = None
-    camera: str | None = None
-    factor: int | None = None
-    path: str | None = None
-
-
 class WorkflowNode(BaseModel):
     """Workflow node."""
     id: str
     type: str
-    data: Dict
+    data: Dict  # Flexible dict to support various node types
     position: Dict[str, float]
 
 
@@ -93,6 +83,7 @@ def _topological_sort(nodes: List[WorkflowNode], edges: List[WorkflowEdge]) -> L
     """
     Perform topological sort on the workflow graph.
     Returns list of node IDs in execution order.
+    Uses deque for O(1) queue operations.
     """
     # Build adjacency list
     graph: Dict[str, List[str]] = {node.id: [] for node in nodes}
@@ -102,12 +93,12 @@ def _topological_sort(nodes: List[WorkflowNode], edges: List[WorkflowEdge]) -> L
         graph[edge.source].append(edge.target)
         in_degree[edge.target] += 1
     
-    # Find nodes with no incoming edges
-    queue = [node_id for node_id, degree in in_degree.items() if degree == 0]
+    # Find nodes with no incoming edges - use deque for O(1) popleft
+    queue = deque([node_id for node_id, degree in in_degree.items() if degree == 0])
     result = []
     
     while queue:
-        node_id = queue.pop(0)
+        node_id = queue.popleft()  # O(1) instead of list.pop(0)
         result.append(node_id)
         
         for neighbor in graph[node_id]:
