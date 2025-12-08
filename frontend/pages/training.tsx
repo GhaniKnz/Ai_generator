@@ -134,7 +134,7 @@ export default function Training() {
   }
 
   return (
-    <Layout title="Training Jobs">
+    <Layout title="Tâches d'Entraînement">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div
@@ -145,10 +145,10 @@ export default function Training() {
           <div>
             <h2 className="text-3xl font-bold">
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Training Jobs
+                Tâches d'Entraînement
               </span>
             </h2>
-            <p className="text-gray-400 mt-1">Create and manage AI model training</p>
+            <p className="text-gray-400 mt-1">Créez et gérez l'entraînement de modèles IA</p>
           </div>
           <div className="flex items-center space-x-3">
             <Link
@@ -156,20 +156,20 @@ export default function Training() {
               className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
             >
               <EyeIcon className="w-5 h-5" />
-              <span>Monitor en Temps Réel</span>
+              <span>Moniteur en Temps Réel</span>
             </Link>
             <Link
               href="/training-guide"
               className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
             >
               <BookOpenIcon className="w-5 h-5" />
-              <span>Training Guide</span>
+              <span>Guide d'Entraînement</span>
             </Link>
             <Link
               href="/datasets"
               className="px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
             >
-              Manage Datasets
+              Gérer les Ensembles de Données
             </Link>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -178,7 +178,7 @@ export default function Training() {
               className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all"
             >
               <PlusIcon className="w-5 h-5" />
-              <span>New Training Job</span>
+              <span>Nouvelle Tâche d'Entraînement</span>
             </motion.button>
           </div>
         </motion.div>
@@ -192,7 +192,7 @@ export default function Training() {
             className="glass-effect rounded-apple-lg p-6 border border-white/10 cursor-default"
           >
             <div className="text-2xl font-bold text-white mb-1">{jobs.length}</div>
-            <div className="text-sm text-gray-400">Total Jobs</div>
+            <div className="text-sm text-gray-400">Total des Tâches</div>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -204,7 +204,7 @@ export default function Training() {
             <div className="text-2xl font-bold text-blue-400 mb-1">
               {jobs.filter(j => j.status === 'running').length}
             </div>
-            <div className="text-sm text-gray-400">Running</div>
+            <div className="text-sm text-gray-400">En Cours</div>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -216,7 +216,7 @@ export default function Training() {
             <div className="text-2xl font-bold text-green-400 mb-1">
               {jobs.filter(j => j.status === 'completed').length}
             </div>
-            <div className="text-sm text-gray-400">Completed</div>
+            <div className="text-sm text-gray-400">Terminées</div>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -228,7 +228,7 @@ export default function Training() {
             <div className="text-2xl font-bold text-yellow-400 mb-1">
               {jobs.filter(j => j.status === 'pending').length}
             </div>
-            <div className="text-sm text-gray-400">Pending</div>
+            <div className="text-sm text-gray-400">En Attente</div>
           </motion.div>
         </div>
 
@@ -240,12 +240,12 @@ export default function Training() {
           className="glass-effect rounded-apple-lg border border-white/10"
         >
           <div className="p-6 border-b border-white/10">
-            <h2 className="text-xl font-semibold text-white">All Training Jobs</h2>
+            <h2 className="text-xl font-semibold text-white">Toutes les Tâches d'Entraînement</h2>
           </div>
 
           {jobs.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="text-gray-400 mb-4">No training jobs yet</div>
+              <div className="text-gray-400 mb-4">Aucune tâche d'entraînement pour le moment</div>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
