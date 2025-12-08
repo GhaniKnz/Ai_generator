@@ -50,6 +50,10 @@ export default function Home() {
             <Link href="/settings" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
               Settings
             </Link>
+            <div className="border-t border-gray-700 my-2"></div>
+            <Link href="/monitoring" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
+              📊 Monitoring
+            </Link>
           </nav>
         </aside>
 

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import Settings, get_settings
 from .database import init_db
 from .jobs import JobQueue, build_job_queue
-from .routers import generation, models, projects, workflows, datasets, training, data_collection
+from .routers import generation, models, projects, workflows, datasets, training, data_collection, presets, suggestions, monitoring
 
 
 def create_app(settings: Settings, queue: JobQueue) -> FastAPI:
@@ -30,6 +30,9 @@ def create_app(settings: Settings, queue: JobQueue) -> FastAPI:
     app.include_router(datasets.router, prefix=settings.api_prefix)
     app.include_router(training.router, prefix=settings.api_prefix)
     app.include_router(data_collection.router, prefix=settings.api_prefix)
+    app.include_router(presets.router, prefix=settings.api_prefix)
+    app.include_router(suggestions.router, prefix=settings.api_prefix)
+    app.include_router(monitoring.router, prefix=settings.api_prefix)
 
     @app.on_event("startup")
     async def startup_event() -> None:
