@@ -5,7 +5,18 @@ from typing import Dict, List, Optional
 from uuid import uuid4
 
 from .config import get_settings
-from .schemas import JobOutput, JobState, JobStatus, JobType, TextToImageRequest
+from .schemas import (
+    ImageToImageRequest,
+    ImageToVideoRequest,
+    InpaintingRequest,
+    JobOutput,
+    JobState,
+    JobStatus,
+    JobType,
+    TextToImageRequest,
+    TextToVideoRequest,
+    UpscaleRequest,
+)
 
 
 class JobQueue:
@@ -27,12 +38,13 @@ class JobQueue:
             self.workers.append(asyncio.create_task(self._worker()))
         self._started = True
 
-    def create_text_to_image_job(self, payload: TextToImageRequest) -> JobState:
+    def _create_job(self, job_type: JobType, payload) -> JobState:
+        """Common job creation logic."""
         job_id = str(uuid4())
         now = datetime.utcnow()
         job = JobState(
             id=job_id,
-            type=JobType.text_to_image,
+            type=job_type,
             status=JobStatus.pending,
             created_at=now,
             updated_at=now,
@@ -45,6 +57,24 @@ class JobQueue:
         self.jobs[job_id] = job
         self.queue.put_nowait(job_id)
         return job
+
+    def create_text_to_image_job(self, payload: TextToImageRequest) -> JobState:
+        return self._create_job(JobType.text_to_image, payload)
+
+    def create_text_to_video_job(self, payload: TextToVideoRequest) -> JobState:
+        return self._create_job(JobType.text_to_video, payload)
+
+    def create_image_to_video_job(self, payload: ImageToVideoRequest) -> JobState:
+        return self._create_job(JobType.image_to_video, payload)
+
+    def create_image_to_image_job(self, payload: ImageToImageRequest) -> JobState:
+        return self._create_job(JobType.image_to_image, payload)
+
+    def create_inpainting_job(self, payload: InpaintingRequest) -> JobState:
+        return self._create_job(JobType.inpainting, payload)
+
+    def create_upscale_job(self, payload: UpscaleRequest) -> JobState:
+        return self._create_job(JobType.upscale, payload)
 
     def get_job(self, job_id: str) -> Optional[JobState]:
         return self.jobs.get(job_id)
@@ -61,6 +91,16 @@ class JobQueue:
             try:
                 if job.type == JobType.text_to_image:
                     await self._run_text_to_image(job)
+                elif job.type == JobType.text_to_video:
+                    await self._run_text_to_video(job)
+                elif job.type == JobType.image_to_video:
+                    await self._run_image_to_video(job)
+                elif job.type == JobType.image_to_image:
+                    await self._run_image_to_image(job)
+                elif job.type == JobType.inpainting:
+                    await self._run_inpainting(job)
+                elif job.type == JobType.upscale:
+                    await self._run_upscale(job)
                 job.status = JobStatus.done
                 job.progress = 1.0
             except Exception as exc:  # pragma: no cover - defensive
@@ -78,11 +118,14 @@ class JobQueue:
             outfile = self.output_dir / f"{job.id}-{idx + 1}.txt"
             content = (
                 f"Mock image for job {job.id}\n"
+                f"Type: Text-to-Image\n"
                 f"prompt: {params.get('prompt')}\n"
                 f"negative_prompt: {params.get('negative_prompt')}\n"
                 f"model: {params.get('model')}\n"
+                f"style_preset: {params.get('style_preset')}\n"
                 f"cfg_scale: {params.get('cfg_scale')}, steps: {params.get('steps')}\n"
                 f"size: {params.get('width')}x{params.get('height')}\n"
+                f"lora_models: {params.get('lora_models')}\n"
             )
             outfile.write_text(content, encoding="utf-8")
             await asyncio.sleep(self.delay)
@@ -90,6 +133,88 @@ class JobQueue:
             job.progress = (idx + 1) / num_outputs
             job.updated_at = datetime.utcnow()
         job.outputs = outputs
+
+    async def _run_text_to_video(self, job: JobState) -> None:
+        params = job.params
+        outfile = self.output_dir / f"{job.id}-video.txt"
+        content = (
+            f"Mock video for job {job.id}\n"
+            f"Type: Text-to-Video\n"
+            f"prompt: {params.get('prompt')}\n"
+            f"duration: {params.get('duration')}s at {params.get('fps')} fps\n"
+            f"model: {params.get('model')}\n"
+            f"style_preset: {params.get('style_preset')}\n"
+            f"camera_movement: {params.get('camera_movement')}\n"
+            f"motion_intensity: {params.get('motion_intensity')}\n"
+            f"size: {params.get('width')}x{params.get('height')}\n"
+        )
+        outfile.write_text(content, encoding="utf-8")
+        await asyncio.sleep(self.delay * 3)  # Videos take longer
+        job.outputs = [JobOutput(index=0, path=str(outfile))]
+        job.progress = 1.0
+
+    async def _run_image_to_video(self, job: JobState) -> None:
+        params = job.params
+        outfile = self.output_dir / f"{job.id}-video.txt"
+        content = (
+            f"Mock video for job {job.id}\n"
+            f"Type: Image-to-Video\n"
+            f"input_image: {params.get('image_path')}\n"
+            f"prompt: {params.get('prompt')}\n"
+            f"duration: {params.get('duration')}s at {params.get('fps')} fps\n"
+            f"camera_movement: {params.get('camera_movement')}\n"
+            f"motion_intensity: {params.get('motion_intensity')}\n"
+        )
+        outfile.write_text(content, encoding="utf-8")
+        await asyncio.sleep(self.delay * 3)
+        job.outputs = [JobOutput(index=0, path=str(outfile))]
+        job.progress = 1.0
+
+    async def _run_image_to_image(self, job: JobState) -> None:
+        params = job.params
+        outfile = self.output_dir / f"{job.id}-img.txt"
+        content = (
+            f"Mock image for job {job.id}\n"
+            f"Type: Image-to-Image\n"
+            f"input_image: {params.get('image_path')}\n"
+            f"prompt: {params.get('prompt')}\n"
+            f"strength: {params.get('strength')}\n"
+            f"style_preset: {params.get('style_preset')}\n"
+        )
+        outfile.write_text(content, encoding="utf-8")
+        await asyncio.sleep(self.delay)
+        job.outputs = [JobOutput(index=0, path=str(outfile))]
+        job.progress = 1.0
+
+    async def _run_inpainting(self, job: JobState) -> None:
+        params = job.params
+        outfile = self.output_dir / f"{job.id}-inpaint.txt"
+        content = (
+            f"Mock inpainted image for job {job.id}\n"
+            f"Type: Inpainting\n"
+            f"input_image: {params.get('image_path')}\n"
+            f"mask: {params.get('mask_path')}\n"
+            f"prompt: {params.get('prompt')}\n"
+        )
+        outfile.write_text(content, encoding="utf-8")
+        await asyncio.sleep(self.delay)
+        job.outputs = [JobOutput(index=0, path=str(outfile))]
+        job.progress = 1.0
+
+    async def _run_upscale(self, job: JobState) -> None:
+        params = job.params
+        outfile = self.output_dir / f"{job.id}-upscaled.txt"
+        content = (
+            f"Mock upscaled image for job {job.id}\n"
+            f"Type: Upscale\n"
+            f"input_image: {params.get('image_path')}\n"
+            f"scale_factor: {params.get('scale_factor')}x\n"
+            f"model: {params.get('model')}\n"
+        )
+        outfile.write_text(content, encoding="utf-8")
+        await asyncio.sleep(self.delay * 2)
+        job.outputs = [JobOutput(index=0, path=str(outfile))]
+        job.progress = 1.0
 
 
 def build_job_queue() -> JobQueue:
