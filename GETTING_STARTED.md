@@ -1,12 +1,53 @@
 # AI Generator - Getting Started Guide
 
+## Important: First Time Setup
+
+⚠️ **If you just cloned the repository or pulled changes**, you need to set up your local environment properly.
+
+### Initial Setup Steps
+
+1. **Create a new Python virtual environment** (don't use the old one):
+```bash
+# Remove old virtual environment if it exists
+rm -rf .venv
+
+# Create new virtual environment
+python -m venv .venv
+
+# Activate it
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
+```
+
+2. **Install Python dependencies**:
+```bash
+pip install -r requirements.txt
+```
+
+3. **For the frontend**, install Node.js dependencies:
+```bash
+cd frontend
+npm install
+cd ..
+```
+
 ## Quick Start
 
 ### Running the Backend
 
-1. Install Python dependencies:
+1. Activate your virtual environment:
 ```bash
-pip install -r requirements.txt
+# On Windows:
+.venv\Scripts\activate
+# On macOS/Linux:
+source .venv/bin/activate
+```
+
+2. Start the server:
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 2. Start the server:
@@ -224,8 +265,38 @@ docker-compose down
 
 ## Troubleshooting
 
+### Changes not appearing after pulling from GitHub
+
+**Problem**: You pulled changes from GitHub but don't see them when running the app locally.
+
+**Solution**: 
+1. Delete your old virtual environment and create a fresh one:
+```bash
+rm -rf .venv
+python -m venv .venv
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+pip install -r requirements.txt
+```
+
+2. For frontend, reinstall dependencies:
+```bash
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+```
+
+3. Clear any cached data:
+```bash
+# Delete database to start fresh (if needed)
+rm -f ai_generator.db
+
+# Delete output files (if needed)
+rm -rf outputs/*
+```
+
 ### Backend won't start
 - Check Python version (3.11+)
+- Make sure virtual environment is activated
 - Install all dependencies: `pip install -r requirements.txt`
 - Check port 8000 is not in use
 
@@ -233,10 +304,15 @@ docker-compose down
 - Check Node version (18+)
 - Run `npm install` in frontend directory
 - Check port 3000 is not in use
+- Try deleting `node_modules` and `.next` folders and reinstalling
 
 ### Database errors
 - Delete `ai_generator.db` to reset
 - Check file permissions in project directory
+
+### Import errors or module not found
+- Make sure you activated your virtual environment
+- Reinstall dependencies: `pip install -r requirements.txt`
 
 ## Next Steps
 
