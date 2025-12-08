@@ -7,7 +7,7 @@ interface TrainingJob {
   base_model_id: number
   type: string
   status: string
-  progress: float
+  progress: number
   current_epoch: number | null
   loss: number | null
   output_path: string | null
