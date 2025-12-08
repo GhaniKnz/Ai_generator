@@ -18,6 +18,7 @@ interface UploadedFile {
   size: number
   type: string
   extracted_files?: string[]
+  error?: string
 }
 
 export default function Datasets() {
@@ -26,6 +27,7 @@ export default function Datasets() {
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [selectedDatasetId, setSelectedDatasetId] = useState<number | null>(null)
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const [newDataset, setNewDataset] = useState({
     name: '',
     description: '',
@@ -89,15 +91,26 @@ export default function Datasets() {
   }
 
   const handleUploadComplete = (files: UploadedFile[]) => {
-    setUploadSuccess(`Successfully uploaded ${files.length} file(s)!`)
-    setTimeout(() => {
-      setUploadSuccess(null)
-      setShowUploadModal(false)
-    }, 2000)
+    const successCount = files.filter(f => !f.error).length
+    const errorCount = files.filter(f => f.error).length
+    
+    if (errorCount > 0) {
+      setUploadError(`${errorCount} file(s) failed to upload`)
+      setTimeout(() => setUploadError(null), 3000)
+    }
+    
+    if (successCount > 0) {
+      setUploadSuccess(`Successfully uploaded ${successCount} file(s)!`)
+      setTimeout(() => {
+        setUploadSuccess(null)
+        setShowUploadModal(false)
+      }, 2000)
+    }
   }
 
   const handleUploadError = (error: string) => {
-    alert(`Upload error: ${error}`)
+    setUploadError(error)
+    setTimeout(() => setUploadError(null), 3000)
   }
 
   const openUploadModal = (datasetId: number) => {
@@ -335,11 +348,19 @@ export default function Datasets() {
               </button>
             </div>
             
-            {uploadSuccess ? (
+            {uploadSuccess && (
               <div className="bg-green-500/20 border border-green-500 text-green-400 p-4 rounded-lg mb-4">
                 {uploadSuccess}
               </div>
-            ) : (
+            )}
+            
+            {uploadError && (
+              <div className="bg-red-500/20 border border-red-500 text-red-400 p-4 rounded-lg mb-4">
+                {uploadError}
+              </div>
+            )}
+            
+            {!uploadSuccess && (
               <FileUpload
                 onUploadComplete={handleUploadComplete}
                 onUploadError={handleUploadError}

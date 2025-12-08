@@ -16,6 +16,7 @@ interface UploadedFile {
   size: number
   type: string
   extracted_files?: string[]
+  error?: string
 }
 
 interface PreviewFile extends File {

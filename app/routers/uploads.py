@@ -48,6 +48,7 @@ class FileUploadResponse(BaseModel):
     size: int
     type: str
     extracted_files: List[str] = []
+    error: str | None = None
 
 
 def get_file_type(filename: str) -> str:
@@ -169,7 +170,8 @@ async def upload_multiple_files(
                 path="",
                 size=0,
                 type="error",
-                extracted_files=[f"Error: {e.detail}"]
+                extracted_files=[],
+                error=e.detail
             ))
     
     return results
