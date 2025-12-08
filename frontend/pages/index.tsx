@@ -30,6 +30,14 @@ export default function Home() {
             <Link href="/lab" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
               Lab Mode
             </Link>
+            <div className="border-t border-gray-700 my-2"></div>
+            <Link href="/datasets" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
+              Datasets
+            </Link>
+            <Link href="/training" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
+              Training
+            </Link>
+            <div className="border-t border-gray-700 my-2"></div>
             <Link href="/assets" className="block px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-md">
               Assets
             </Link>
