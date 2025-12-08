@@ -1,159 +1,268 @@
+import { useCallback, useState } from 'react'
 import Link from 'next/link'
+import ReactFlow, {
+  Node,
+  Edge,
+  Controls,
+  Background,
+  BackgroundVariant,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection,
+  NodeTypes,
+  MiniMap,
+} from 'reactflow'
+import 'reactflow/dist/style.css'
+
+import { TextNode } from '@/components/TextNode'
+import { ImageGenNode } from '@/components/ImageGenNode'
+import { VideoGenNode } from '@/components/VideoGenNode'
+import { UpscaleNode } from '@/components/UpscaleNode'
+import { OutputNode } from '@/components/OutputNode'
+
+const nodeTypes: NodeTypes = {
+  textNode: TextNode,
+  imageGenNode: ImageGenNode,
+  videoGenNode: VideoGenNode,
+  upscaleNode: UpscaleNode,
+  outputNode: OutputNode,
+}
+
+const initialNodes: Node[] = [
+  {
+    id: '1',
+    type: 'textNode',
+    position: { x: 50, y: 100 },
+    data: { label: 'Text Prompt', prompt: 'A serene forest landscape at sunset' },
+  },
+  {
+    id: '2',
+    type: 'imageGenNode',
+    position: { x: 350, y: 100 },
+    data: { label: 'Generate Image', model: 'Stable Diffusion 1.5', status: 'Ready' },
+  },
+  {
+    id: '3',
+    type: 'videoGenNode',
+    position: { x: 650, y: 100 },
+    data: { label: 'Generate Video', duration: 5, camera: 'dolly' },
+  },
+  {
+    id: '4',
+    type: 'upscaleNode',
+    position: { x: 950, y: 100 },
+    data: { label: 'Upscale', factor: 2 },
+  },
+  {
+    id: '5',
+    type: 'outputNode',
+    position: { x: 1250, y: 100 },
+    data: { label: 'Output', path: '' },
+  },
+]
+
+const initialEdges: Edge[] = [
+  { id: 'e1-2', source: '1', target: '2', animated: true },
+  { id: 'e2-3', source: '2', target: '3', animated: true },
+  { id: 'e3-4', source: '3', target: '4', animated: true },
+  { id: 'e4-5', source: '4', target: '5', animated: true },
+]
 
 export default function Lab() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const [running, setRunning] = useState(false)
+
+  const onConnect = useCallback(
+    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  )
+
+  const handleAddNode = (type: string) => {
+    const newNode: Node = {
+      id: `${Date.now()}`,
+      type,
+      position: { x: 100 + nodes.length * 20, y: 300 + nodes.length * 20 },
+      data: getDefaultNodeData(type),
+    }
+    setNodes((nds) => [...nds, newNode])
+  }
+
+  const getDefaultNodeData = (type: string) => {
+    switch (type) {
+      case 'textNode':
+        return { label: 'New Prompt', prompt: 'Enter your prompt...' }
+      case 'imageGenNode':
+        return { label: 'New Image Gen', model: 'SD 1.5' }
+      case 'videoGenNode':
+        return { label: 'New Video Gen', duration: 3, camera: 'static' }
+      case 'upscaleNode':
+        return { label: 'Upscale', factor: 2 }
+      case 'outputNode':
+        return { label: 'Output', path: '' }
+      default:
+        return {}
+    }
+  }
+
+  const handleRunAll = async () => {
+    setRunning(true)
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    setRunning(false)
+    alert('Workflow executed! (This is a demo - connect to backend API for real execution)')
+  }
+
+  const handleClear = () => {
+    if (confirm('Clear all nodes and edges?')) {
+      setNodes([])
+      setEdges([])
+    }
+  }
+
+  const handleSave = () => {
+    const workflow = { nodes, edges }
+    console.log('Saving workflow:', workflow)
+    alert('Workflow saved! Check console for graph data.')
+  }
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="h-screen bg-white flex flex-col">
       {/* Header */}
-      <header className="bg-gray-100 border-b border-gray-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <header className="bg-gray-100 border-b border-gray-300 flex-shrink-0">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="text-blue-600 hover:text-blue-700 mr-4">
               ← Back
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Lab Mode</h1>
-            <span className="ml-3 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded">
-              Coming Soon
+            <span className="ml-3 px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
+              Active
             </span>
           </div>
           <div className="flex items-center space-x-2">
-            <button className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300">
-              New Project
+            <button
+              onClick={handleClear}
+              className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+            >
+              Clear
             </button>
-            <button className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300">
+            <button
+              onClick={handleSave}
+              className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+            >
               Save
             </button>
-            <button className="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
-              Run All
+            <button
+              onClick={handleRunAll}
+              disabled={running}
+              className="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:bg-blue-400"
+            >
+              {running ? 'Running...' : 'Run All'}
             </button>
           </div>
         </div>
       </header>
 
-      <div className="h-[calc(100vh-73px)] bg-white p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-            <svg className="w-24 h-24 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-            </svg>
-            
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Node-Based Workflow Editor
-            </h2>
-            
-            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-              Lab Mode provides a powerful visual canvas for creating complex multi-step AI generation workflows. 
-              Chain together text-to-image, image-to-video, and other operations in a node-based interface similar to ComfyUI.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Visual Nodes</h3>
-                <p className="text-sm text-gray-600">
-                  Drag and drop nodes for different AI operations
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Chain Operations</h3>
-                <p className="text-sm text-gray-600">
-                  Connect outputs to inputs for complex workflows
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Save Templates</h3>
-                <p className="text-sm text-gray-600">
-                  Reuse your workflows as project templates
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-2xl mx-auto">
-              <h3 className="font-semibold text-blue-900 mb-3">Planned Features</h3>
-              <ul className="text-left text-sm text-blue-800 space-y-2">
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Node types: Text Input, Image Generator, Video Generator, Style Transfer, Upscaler, Filter</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Multi-branch workflows with parallel execution</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Real-time preview of intermediate results</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Graph save/load with version control</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Batch processing for multiple variations</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="mt-8">
-              <p className="text-sm text-gray-500 mb-4">
-                Lab Mode will be implemented in Phase 3 using React Flow library
-              </p>
-              <Link 
-                href="/"
-                className="inline-block px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors"
-              >
-                Return to Home
-              </Link>
-            </div>
+      {/* Main Content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <div className="w-64 bg-gray-50 border-r border-gray-300 p-4 overflow-y-auto flex-shrink-0">
+          <h3 className="font-semibold text-gray-900 mb-4">Add Nodes</h3>
+          <div className="space-y-2">
+            <button
+              onClick={() => handleAddNode('textNode')}
+              className="w-full px-3 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 flex items-center justify-start"
+            >
+              <span className="mr-2">📝</span>
+              Text Prompt
+            </button>
+            <button
+              onClick={() => handleAddNode('imageGenNode')}
+              className="w-full px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 flex items-center justify-start"
+            >
+              <span className="mr-2">🎨</span>
+              Image Generator
+            </button>
+            <button
+              onClick={() => handleAddNode('videoGenNode')}
+              className="w-full px-3 py-2 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 flex items-center justify-start"
+            >
+              <span className="mr-2">🎬</span>
+              Video Generator
+            </button>
+            <button
+              onClick={() => handleAddNode('upscaleNode')}
+              className="w-full px-3 py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 flex items-center justify-start"
+            >
+              <span className="mr-2">⬆️</span>
+              Upscale
+            </button>
+            <button
+              onClick={() => handleAddNode('outputNode')}
+              className="w-full px-3 py-2 bg-gray-700 text-white text-sm rounded hover:bg-gray-800 flex items-center justify-start"
+            >
+              <span className="mr-2">💾</span>
+              Output
+            </button>
           </div>
 
-          {/* Example workflow diagram */}
-          <div className="mt-12 bg-gray-50 border border-gray-200 rounded-lg p-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Example Workflow</h3>
-            <div className="flex items-center justify-center space-x-4">
-              <div className="bg-white border-2 border-blue-500 rounded-lg p-4 text-center">
-                <div className="text-2xl mb-2">📝</div>
-                <div className="font-semibold text-sm">Text Prompt</div>
-                <div className="text-xs text-gray-500 mt-1">"Forest scene"</div>
-              </div>
-              <div className="text-gray-400">→</div>
-              <div className="bg-white border-2 border-green-500 rounded-lg p-4 text-center">
-                <div className="text-2xl mb-2">🎨</div>
-                <div className="font-semibold text-sm">Image Gen</div>
-                <div className="text-xs text-gray-500 mt-1">Text-to-Image</div>
-              </div>
-              <div className="text-gray-400">→</div>
-              <div className="bg-white border-2 border-purple-500 rounded-lg p-4 text-center">
-                <div className="text-2xl mb-2">🎬</div>
-                <div className="font-semibold text-sm">Video Gen</div>
-                <div className="text-xs text-gray-500 mt-1">Image-to-Video</div>
-              </div>
-              <div className="text-gray-400">→</div>
-              <div className="bg-white border-2 border-orange-500 rounded-lg p-4 text-center">
-                <div className="text-2xl mb-2">⬆️</div>
-                <div className="font-semibold text-sm">Upscale</div>
-                <div className="text-xs text-gray-500 mt-1">4x Quality</div>
-              </div>
-            </div>
-            <p className="text-center text-xs text-gray-500 mt-6">
-              This workflow would generate a forest scene, animate it, and upscale the result
-            </p>
+          <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+            <p className="font-semibold mb-2">💡 How to use:</p>
+            <ul className="space-y-1">
+              <li>• Drag nodes to reposition</li>
+              <li>• Connect node handles</li>
+              <li>• Click nodes to edit (future)</li>
+              <li>• Run All to execute workflow</li>
+              <li>• Save to store graph</li>
+            </ul>
           </div>
+
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded text-xs text-green-800">
+            <p className="font-semibold mb-1">✨ Features:</p>
+            <ul className="space-y-1">
+              <li>• Example workflow loaded</li>
+              <li>• 5 node types available</li>
+              <li>• Fully interactive canvas</li>
+              <li>• Ready for backend API</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Canvas */}
+        <div className="flex-1 bg-gray-50">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            nodeTypes={nodeTypes}
+            fitView
+            attributionPosition="bottom-left"
+          >
+            <Controls />
+            <MiniMap
+              nodeColor={(node) => {
+                switch (node.type) {
+                  case 'textNode':
+                    return '#3B82F6'
+                  case 'imageGenNode':
+                    return '#10B981'
+                  case 'videoGenNode':
+                    return '#8B5CF6'
+                  case 'upscaleNode':
+                    return '#F59E0B'
+                  case 'outputNode':
+                    return '#374151'
+                  default:
+                    return '#94A3B8'
+                }
+              }}
+              maskColor="rgb(240, 240, 240, 0.6)"
+            />
+            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+          </ReactFlow>
         </div>
       </div>
     </div>
