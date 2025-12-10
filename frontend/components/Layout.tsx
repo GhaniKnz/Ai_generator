@@ -80,12 +80,7 @@ export default function Layout({ children, title, showSidebar = true }: LayoutPr
         <motion.header
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="sticky top-0 z-50 border-b border-white/10"
-          style={{ 
-            background: 'rgba(29, 29, 31, 0.6)',
-            backdropFilter: 'blur(20px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(20px) saturate(180%)'
-          }}
+          className="sticky top-0 z-50 border-b border-white/10 header-glass"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
             <div className="flex items-center justify-between">
@@ -152,12 +147,7 @@ export default function Layout({ children, title, showSidebar = true }: LayoutPr
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -288 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="w-72 border-r border-white/10 overflow-y-auto"
-              style={{ 
-                background: 'rgba(29, 29, 31, 0.5)',
-                backdropFilter: 'blur(20px) saturate(180%)',
-                WebkitBackdropFilter: 'blur(20px) saturate(180%)'
-              }}
+              className="w-72 border-r border-white/10 overflow-y-auto sidebar-glass"
             >
             <nav className="p-4 space-y-6">
               {navSections.map((section, sectionIndex) => (

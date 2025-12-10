@@ -87,6 +87,16 @@ const nodeTemplates = [
   { type: 'outputNode', label: 'Sortie', icon: '📤' },
 ]
 
+// Shared ReactFlow styles
+const reactFlowStyles = {
+  controls: {
+    background: 'rgba(29, 29, 31, 0.8)',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '12px'
+  }
+}
+
 export default function Lab() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
@@ -320,7 +330,7 @@ export default function Lab() {
         </motion.div>
 
         {/* Canvas */}
-        <div className="flex-1" style={{ background: 'linear-gradient(to bottom right, #1a1a2e, #16213e, #0f3460)' }}>
+        <div className="flex-1 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -332,21 +342,9 @@ export default function Lab() {
             style={{ background: 'transparent' }}
           >
             <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#4b5563" />
-            <Controls 
-              style={{ 
-                background: 'rgba(29, 29, 31, 0.8)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '12px'
-              }}
-            />
+            <Controls style={reactFlowStyles.controls} />
             <MiniMap
-              style={{ 
-                background: 'rgba(29, 29, 31, 0.8)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                borderRadius: '12px'
-              }}
+              style={reactFlowStyles.controls}
               nodeColor={(node) => {
                 switch (node.type) {
                   case 'textNode': return '#3b82f6'

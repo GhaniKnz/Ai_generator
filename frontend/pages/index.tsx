@@ -8,8 +8,7 @@ import {
   BeakerIcon, 
   FolderIcon, 
   CpuChipIcon, 
-  CloudArrowUpIcon,
-  EyeIcon
+  CloudArrowUpIcon
 } from '@heroicons/react/24/outline'
 
 export default function Home() {
