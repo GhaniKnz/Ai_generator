@@ -228,6 +228,7 @@ export default function Lab() {
 
   return (
     <Layout title="Mode Lab" showSidebar={false}>
+      {/* Full height container: viewport height minus header (57px from Layout component) */}
       <div className="h-[calc(100vh-57px)] flex flex-col">
         {/* Toolbar */}
         <motion.div
