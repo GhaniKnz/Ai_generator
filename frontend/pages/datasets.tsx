@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { motion } from 'framer-motion'
+import Layout from '@/components/Layout'
 import FileUpload from '../components/FileUpload'
+import { FolderIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 interface Dataset {
   id: number
@@ -119,72 +121,115 @@ export default function Datasets() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <Link href="/" className="text-blue-400 hover:text-blue-300 mr-4">
-              ← Back
-            </Link>
-            <h1 className="text-2xl font-bold text-white">Training Datasets</h1>
-          </div>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            + New Dataset
-          </button>
-        </div>
-      </header>
-
+    <Layout title="Ensembles de Données">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between mb-8"
+        >
+          <div>
+            <h2 className="text-3xl font-bold mb-2">
+              <span className="bg-gradient-to-r from-indigo-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                Ensembles de Données
+              </span>
+            </h2>
+            <p className="text-gray-400">Gérez et organisez vos ensembles de données d'entraînement</p>
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all"
+          >
+            <PlusIcon className="w-5 h-5" />
+            <span>Nouveau Dataset</span>
+          </motion.button>
+        </motion.div>
+
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="glass-effect rounded-apple-lg p-6 border border-white/10"
+          >
             <div className="text-2xl font-bold text-white mb-1">{datasets.length}</div>
             <div className="text-sm text-gray-400">Total Datasets</div>
-          </div>
-          <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="glass-effect rounded-apple-lg p-6 border border-white/10"
+          >
             <div className="text-2xl font-bold text-blue-400 mb-1">
               {datasets.reduce((sum, ds) => sum + ds.num_items, 0)}
             </div>
-            <div className="text-sm text-gray-400">Total Items</div>
-          </div>
-          <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+            <div className="text-sm text-gray-400">Total Éléments</div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="glass-effect rounded-apple-lg p-6 border border-white/10"
+          >
             <div className="text-2xl font-bold text-green-400 mb-1">
               {datasets.filter(ds => ds.type === 'image').length}
             </div>
-            <div className="text-sm text-gray-400">Image Datasets</div>
-          </div>
-          <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+            <div className="text-sm text-gray-400">Datasets Images</div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="glass-effect rounded-apple-lg p-6 border border-white/10"
+          >
             <div className="text-2xl font-bold text-purple-400 mb-1">
               {datasets.filter(ds => ds.type === 'video').length}
             </div>
-            <div className="text-sm text-gray-400">Video Datasets</div>
-          </div>
+            <div className="text-sm text-gray-400">Datasets Vidéos</div>
+          </motion.div>
         </div>
 
         {/* Datasets List */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700">
-          <div className="p-4 border-b border-gray-700">
-            <h2 className="text-lg font-semibold text-white">All Datasets</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="glass-effect rounded-apple-lg border border-white/10"
+        >
+          <div className="p-6 border-b border-white/10">
+            <div className="flex items-center space-x-2">
+              <FolderIcon className="w-6 h-6 text-blue-400" />
+              <h2 className="text-lg font-semibold text-white">Tous les Datasets</h2>
+            </div>
           </div>
 
           {datasets.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="text-gray-400 mb-4">No datasets yet</div>
-              <button
+              <div className="text-gray-400 mb-4">Aucun dataset pour le moment</div>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setShowCreateModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all"
               >
-                Create Your First Dataset
-              </button>
+                Créer votre Premier Dataset
+              </motion.button>
             </div>
           ) : (
-            <div className="divide-y divide-gray-700">
-              {datasets.map((dataset) => (
-                <div key={dataset.id} className="p-4 hover:bg-gray-700/50">
+            <div className="divide-y divide-white/10">
+              {datasets.map((dataset, index) => (
+                <motion.div
+                  key={dataset.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                  className="p-6 hover:bg-white/5 transition-all"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-white mb-1">
@@ -215,61 +260,76 @@ export default function Datasets() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => openUploadModal(dataset.id)}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm rounded-xl hover:shadow-lg transition-all"
                       >
                         Upload
-                      </button>
-                      <Link
-                        href={`/training?dataset=${dataset.id}`}
-                        className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700"
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => window.location.href = `/training?dataset=${dataset.id}`}
+                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm rounded-xl hover:shadow-lg transition-all"
                       >
-                        Train
-                      </Link>
-                      <button
+                        Entraîner
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => handleDeleteDataset(dataset.id)}
-                        className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                        className="p-2 bg-red-500/20 text-red-400 text-sm rounded-xl hover:bg-red-500/30 transition-all"
                       >
-                        Delete
-                      </button>
+                        <TrashIcon className="w-5 h-5" />
+                      </motion.button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Info Box */}
-        <div className="mt-8 bg-blue-900/20 border border-blue-700 p-6 rounded-lg">
-          <h3 className="text-sm font-semibold text-blue-300 mb-3">💡 About Datasets</h3>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8 glass-effect rounded-apple-lg p-6 border border-blue-500/20 bg-blue-900/10"
+        >
+          <h3 className="text-sm font-semibold text-blue-300 mb-3">💡 À Propos des Datasets</h3>
           <div className="text-sm text-gray-300 space-y-2">
-            <p><strong>Image Datasets:</strong> Collections of images with captions for training image models</p>
-            <p><strong>Video Datasets:</strong> Video clips for training video generation models</p>
-            <p><strong>Mixed Datasets:</strong> Combination of images and videos</p>
-            <p className="mt-4"><strong>Usage:</strong> Create a dataset, upload your data, then start a training job to fine-tune models (LoRA, DreamBooth)</p>
+            <p><strong>Datasets d'Images:</strong> Collections d'images avec légendes pour l'entraînement de modèles d'images</p>
+            <p><strong>Datasets de Vidéos:</strong> Clips vidéo pour l'entraînement de modèles de génération vidéo</p>
+            <p><strong>Datasets Mixtes:</strong> Combinaison d'images et de vidéos</p>
+            <p className="mt-4"><strong>Utilisation:</strong> Créez un dataset, téléchargez vos données, puis démarrez un travail d'entraînement pour affiner les modèles (LoRA, DreamBooth)</p>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg max-w-md w-full p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Create New Dataset</h2>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-effect rounded-apple-lg border border-white/10 max-w-md w-full p-6"
+          >
+            <h2 className="text-xl font-bold text-white mb-4">Créer un Nouveau Dataset</h2>
             
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Name *
+                  Nom *
                 </label>
                 <input
                   type="text"
                   value={newDataset.name}
                   onChange={(e) => setNewDataset({...newDataset, name: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  placeholder="My Training Dataset"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Mon Dataset d'Entraînement"
                 />
               </div>
 
@@ -280,9 +340,9 @@ export default function Datasets() {
                 <textarea
                   value={newDataset.description}
                   onChange={(e) => setNewDataset({...newDataset, description: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={3}
-                  placeholder="Dataset description..."
+                  placeholder="Description du dataset..."
                 />
               </div>
 
@@ -293,59 +353,69 @@ export default function Datasets() {
                 <select
                   value={newDataset.type}
                   onChange={(e) => setNewDataset({...newDataset, type: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="image">Image</option>
-                  <option value="video">Video</option>
-                  <option value="mixed">Mixed</option>
+                  <option value="video">Vidéo</option>
+                  <option value="mixed">Mixte</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Tags (comma-separated)
+                  Tags (séparés par des virgules)
                 </label>
                 <input
                   type="text"
                   value={newDataset.tags}
                   onChange={(e) => setNewDataset({...newDataset, tags: e.target.value})}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                  placeholder="style, character, landscape"
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="style, personnage, paysage"
                 />
               </div>
             </div>
 
             <div className="flex items-center justify-end space-x-3 mt-6">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setShowCreateModal(false)}
-                className="px-4 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600"
+                className="px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
               >
-                Cancel
-              </button>
-              <button
+                Annuler
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleCreateDataset}
                 disabled={!newDataset.name}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-600"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Create
-              </button>
+                Créer
+              </motion.button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg max-w-2xl w-full p-6">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-effect rounded-apple-lg border border-white/10 max-w-2xl w-full p-6"
+          >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-white">Upload Files to Dataset</h2>
-              <button
+              <h2 className="text-xl font-bold text-white">Télécharger des Fichiers vers le Dataset</h2>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 onClick={() => setShowUploadModal(false)}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white transition-colors"
               >
                 ✕
-              </button>
+              </motion.button>
             </div>
             
             {uploadSuccess && (
@@ -369,9 +439,9 @@ export default function Datasets() {
                 extractArchives={true}
               />
             )}
-          </div>
+          </motion.div>
         </div>
       )}
-    </div>
+    </Layout>
   )
 }

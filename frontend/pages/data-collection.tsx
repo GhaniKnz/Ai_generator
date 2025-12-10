@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
+import { motion } from 'framer-motion';
+import Layout from '@/components/Layout';
+import { ArrowDownTrayIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 interface ImageSource {
   id: string;
@@ -110,50 +111,49 @@ export default function DataCollection() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <Head>
-        <title>Data Collection - AI Generator</title>
-      </Head>
-
-      {/* Navigation */}
-      <nav className="bg-gray-800 border-b border-gray-700 p-4">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-purple-400">
-            AI Generator
-          </Link>
-          <div className="space-x-4">
-            <Link href="/datasets" className="text-gray-300 hover:text-white">
-              Datasets
-            </Link>
-            <Link href="/training" className="text-gray-300 hover:text-white">
-              Training
-            </Link>
-            <Link href="/data-collection" className="text-purple-400">
-              Data Collection
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      <div className="container mx-auto p-8">
-        <h1 className="text-4xl font-bold mb-2">🌐 Data Collection</h1>
-        <p className="text-gray-400 mb-8">
-          Search and download images from free stock photo APIs (Unsplash, Pexels) to enrich your datasets.
-        </p>
+    <Layout title="Collection de Données">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h2 className="text-3xl font-bold mb-2">
+            <span className="bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              Collection de Données
+            </span>
+          </h2>
+          <p className="text-gray-400">
+            Recherchez et téléchargez des images gratuites pour enrichir vos datasets
+          </p>
+        </motion.div>
 
         {/* Info Box */}
-        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-8">
-          <h3 className="font-semibold mb-2">📝 About Data Collection</h3>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="glass-effect rounded-apple-lg p-6 border border-blue-500/20 bg-blue-900/10 mb-8"
+        >
+          <h3 className="font-semibold mb-2 text-blue-300">📝 À Propos de la Collection de Données</h3>
           <p className="text-sm text-gray-300">
-            This tool allows you to search for images from legal, free-to-use sources like Unsplash and Pexels.
-            All images respect licensing requirements and can be used for AI training. Select images and download
-            them directly to your datasets.
+            Cet outil vous permet de rechercher des images provenant de sources gratuites et légales comme Unsplash et Pexels.
+            Toutes les images respectent les exigences de licence et peuvent être utilisées pour l'entraînement de l'IA.
           </p>
-        </div>
+        </motion.div>
 
         {/* Search Section */}
-        <div className="bg-gray-800 rounded-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-4">🔍 Search Images</h2>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass-effect rounded-apple-lg p-6 border border-white/10 mb-8"
+        >
+          <div className="flex items-center space-x-2 mb-6">
+            <MagnifyingGlassIcon className="w-6 h-6 text-cyan-400" />
+            <h2 className="text-2xl font-bold text-white">Rechercher des Images</h2>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
@@ -303,6 +303,6 @@ export default function DataCollection() {
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }
