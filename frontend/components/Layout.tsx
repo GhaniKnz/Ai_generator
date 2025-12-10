@@ -1,7 +1,7 @@
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   PhotoIcon,
   VideoCameraIcon,
@@ -15,7 +15,9 @@ import {
   HomeIcon,
   RectangleStackIcon,
   ArrowDownTrayIcon,
-  EyeIcon
+  EyeIcon,
+  Bars3Icon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 
 interface LayoutProps {
@@ -26,6 +28,7 @@ interface LayoutProps {
 
 export default function Layout({ children, title, showSidebar = true }: LayoutProps) {
   const router = useRouter()
+  const [sidebarOpen, setSidebarOpen] = useState(true)
 
   const navSections = [
     {
@@ -64,65 +67,98 @@ export default function Layout({ children, title, showSidebar = true }: LayoutPr
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-apple-gray-900 to-black">
-      {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-effect sticky top-0 z-50 border-b border-white/10"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-3">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-2xl font-bold"
-              >
-                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  AI Generator
-                </span>
-              </motion.div>
-            </Link>
-            {title && <h1 className="text-lg text-white font-medium hidden md:block">{title}</h1>}
-            <div className="flex items-center space-x-3">
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Link
-                  href="/monitoring"
-                  className={`p-2 rounded-xl transition-all ${
-                    isActive('/monitoring')
-                      ? 'bg-blue-500/20 text-blue-400'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <ChartBarIcon className="w-6 h-6" />
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900/20 via-purple-900/20 to-pink-900/20 relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/30 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-pink-500/30 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
+      </div>
+      
+      <div className="relative z-10">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="sticky top-0 z-50 border-b border-white/10"
+          style={{ 
+            background: 'rgba(29, 29, 31, 0.6)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)'
+          }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                {showSidebar && (
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+                  >
+                    {sidebarOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+                  </motion.button>
+                )}
+                <Link href="/" className="flex items-center space-x-3">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="text-xl font-bold"
+                  >
+                    <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      Générateur IA
+                    </span>
+                  </motion.div>
                 </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Link
-                  href="/settings"
-                  className={`p-2 rounded-xl transition-all ${
-                    isActive('/settings')
-                      ? 'bg-blue-500/20 text-blue-400'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <Cog6ToothIcon className="w-6 h-6" />
-                </Link>
-              </motion.div>
+              </div>
+              {title && <h1 className="text-base text-white font-medium hidden md:block">{title}</h1>}
+              <div className="flex items-center space-x-2">
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Link
+                    href="/monitoring"
+                    className={`p-2 rounded-xl transition-all ${
+                      isActive('/monitoring')
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <ChartBarIcon className="w-5 h-5" />
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Link
+                    href="/settings"
+                    className={`p-2 rounded-xl transition-all ${
+                      isActive('/settings')
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Cog6ToothIcon className="w-5 h-5" />
+                  </Link>
+                </motion.div>
+              </div>
             </div>
           </div>
-        </div>
-      </motion.header>
+        </motion.header>
 
-      <div className="flex h-[calc(100vh-73px)]">
+      <div className="flex h-[calc(100vh-57px)]">
         {/* Improved Sidebar */}
-        {showSidebar && (
-          <motion.aside
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="w-72 glass-effect border-r border-white/10 overflow-y-auto"
-          >
+        <AnimatePresence mode="wait">
+          {showSidebar && sidebarOpen && (
+            <motion.aside
+              initial={{ opacity: 0, x: -288 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -288 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-72 border-r border-white/10 overflow-y-auto"
+              style={{ 
+                background: 'rgba(29, 29, 31, 0.5)',
+                backdropFilter: 'blur(20px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(20px) saturate(180%)'
+              }}
+            >
             <nav className="p-4 space-y-6">
               {navSections.map((section, sectionIndex) => (
                 <motion.div
@@ -174,7 +210,8 @@ export default function Layout({ children, title, showSidebar = true }: LayoutPr
               ))}
             </nav>
           </motion.aside>
-        )}
+          )}
+        </AnimatePresence>
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto">
@@ -186,6 +223,7 @@ export default function Layout({ children, title, showSidebar = true }: LayoutPr
             {children}
           </motion.div>
         </main>
+      </div>
       </div>
     </div>
   )

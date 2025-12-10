@@ -18,11 +18,11 @@ export default function TrainingGuide() {
   const [activeSection, setActiveSection] = useState('overview')
 
   const sections = [
-    { id: 'overview', name: 'Overview', icon: BookOpenIcon },
-    { id: 'types', name: 'Training Types', icon: BeakerIcon },
-    { id: 'parameters', name: 'Parameters', icon: Cog6ToothIcon },
-    { id: 'use-cases', name: 'Use Cases', icon: LightBulbIcon },
-    { id: 'best-practices', name: 'Best Practices', icon: AcademicCapIcon }
+    { id: 'overview', name: 'Vue d\'ensemble', icon: BookOpenIcon },
+    { id: 'types', name: 'Types d\'Entraînement', icon: BeakerIcon },
+    { id: 'parameters', name: 'Paramètres', icon: Cog6ToothIcon },
+    { id: 'use-cases', name: 'Cas d\'Utilisation', icon: LightBulbIcon },
+    { id: 'best-practices', name: 'Meilleures Pratiques', icon: AcademicCapIcon }
   ]
 
   return (
@@ -40,15 +40,15 @@ export default function TrainingGuide() {
                 <ArrowLeftIcon className="w-6 h-6" />
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-white">Training Guide</h1>
-                <p className="text-sm text-gray-400">Complete guide to AI model training</p>
+                <h1 className="text-2xl font-bold text-white">Guide d'Entraînement</h1>
+                <p className="text-sm text-gray-400">Guide complet pour l'entraînement de modèles IA</p>
               </div>
             </div>
             <Link
               href="/training"
               className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all"
             >
-              Start Training →
+              Commencer l'Entraînement →
             </Link>
           </div>
         </div>
