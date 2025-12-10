@@ -8,6 +8,7 @@ interface FileUploadProps {
   multiple?: boolean
   maxSizeMB?: number
   extractArchives?: boolean
+  datasetId?: number
 }
 
 interface UploadedFile {
@@ -16,6 +17,13 @@ interface UploadedFile {
   size: number
   type: string
   extracted_files?: string[]
+  csv_data?: {
+    total_rows: number
+    image_column: string
+    label_column: string
+    mappings: { [key: string]: string }
+    columns: string[]
+  }
   error?: string
 }
 
@@ -28,8 +36,9 @@ export default function FileUpload({
   onUploadError,
   acceptedTypes = [],
   multiple = true,
-  maxSizeMB = 100,
-  extractArchives = true
+  maxSizeMB = 5000,
+  extractArchives = true,
+  datasetId
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -108,18 +117,49 @@ export default function FileUpload({
       formData.append('files', file)
     })
     formData.append('extract_archives', extractArchives.toString())
+    if (datasetId) {
+      formData.append('dataset_id', datasetId.toString())
+    }
 
     try {
-      const response = await fetch('/api/uploads/batch', {
-        method: 'POST',
-        body: formData
+      const xhr = new XMLHttpRequest()
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = (e.loaded / e.total) * 100
+          setUploadProgress(percentComplete)
+        }
       })
 
-      if (!response.ok) {
-        throw new Error('Upload failed')
-      }
+      // Handle completion
+      const uploadPromise = new Promise<UploadedFile[]>((resolve, reject) => {
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const results = JSON.parse(xhr.responseText)
+              resolve(results)
+            } catch (e) {
+              reject(new Error('Failed to parse response'))
+            }
+          } else {
+            reject(new Error(`Upload failed with status ${xhr.status}`))
+          }
+        })
 
-      const results: UploadedFile[] = await response.json()
+        xhr.addEventListener('error', () => {
+          reject(new Error('Network error during upload'))
+        })
+
+        xhr.addEventListener('abort', () => {
+          reject(new Error('Upload cancelled'))
+        })
+      })
+
+      xhr.open('POST', '/api/uploads/batch')
+      xhr.send(formData)
+
+      const results = await uploadPromise
       
       // Clean up previews
       selectedFiles.forEach(file => {
@@ -199,8 +239,8 @@ export default function FileUpload({
         
         <div className="text-sm text-gray-500">
           <p>Supports: Images (PNG, JPG, GIF, etc.), Videos (MP4, AVI, MOV, etc.)</p>
-          <p>Audio (WAV, MP3, etc.), Archives (ZIP, RAR, etc.)</p>
-          <p className="mt-2">Max file size: {maxSizeMB}MB</p>
+          <p>Audio (WAV, MP3, etc.), Archives (ZIP, RAR, etc.), CSV files for labels</p>
+          <p className="mt-2">Max file size: {maxSizeMB}MB per file</p>
         </div>
       </div>
 

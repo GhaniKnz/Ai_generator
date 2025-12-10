@@ -20,6 +20,13 @@ interface UploadedFile {
   size: number
   type: string
   extracted_files?: string[]
+  csv_data?: {
+    total_rows: number
+    image_column: string
+    label_column: string
+    mappings: { [key: string]: string }
+    columns: string[]
+  }
   error?: string
 }
 
@@ -95,6 +102,7 @@ export default function Datasets() {
   const handleUploadComplete = (files: UploadedFile[]) => {
     const successCount = files.filter(f => !f.error).length
     const errorCount = files.filter(f => f.error).length
+    const csvFiles = files.filter(f => f.csv_data)
     
     if (errorCount > 0) {
       setUploadError(`${errorCount} file(s) failed to upload`)
@@ -102,11 +110,17 @@ export default function Datasets() {
     }
     
     if (successCount > 0) {
-      setUploadSuccess(`Successfully uploaded ${successCount} file(s)!`)
+      let message = `Successfully uploaded ${successCount} file(s)!`
+      if (csvFiles.length > 0) {
+        const totalMappings = csvFiles.reduce((sum, f) => sum + (f.csv_data?.total_rows || 0), 0)
+        message += ` Found ${totalMappings} image-label mappings in CSV files.`
+      }
+      setUploadSuccess(message)
       setTimeout(() => {
         setUploadSuccess(null)
         setShowUploadModal(false)
-      }, 2000)
+        fetchDatasets() // Refresh datasets to update item counts
+      }, 3000)
     }
   }
 
@@ -304,7 +318,8 @@ export default function Datasets() {
             <p><strong>Datasets d'Images:</strong> Collections d'images avec légendes pour l'entraînement de modèles d'images</p>
             <p><strong>Datasets de Vidéos:</strong> Clips vidéo pour l'entraînement de modèles de génération vidéo</p>
             <p><strong>Datasets Mixtes:</strong> Combinaison d'images et de vidéos</p>
-            <p className="mt-4"><strong>Utilisation:</strong> Créez un dataset, téléchargez vos données, puis démarrez un travail d'entraînement pour affiner les modèles (LoRA, DreamBooth)</p>
+            <p><strong>Fichiers CSV:</strong> Téléchargez un CSV avec des colonnes 'image' et 'label' pour associer automatiquement les images avec leurs étiquettes (ex: badminton, football, etc.)</p>
+            <p className="mt-4"><strong>Utilisation:</strong> Créez un dataset, téléchargez vos données (images + CSV optionnel), puis démarrez un travail d'entraînement pour affiner les modèles (LoRA, DreamBooth)</p>
           </div>
         </motion.div>
       </div>
@@ -435,8 +450,9 @@ export default function Datasets() {
                 onUploadComplete={handleUploadComplete}
                 onUploadError={handleUploadError}
                 multiple={true}
-                maxSizeMB={100}
+                maxSizeMB={5000}
                 extractArchives={true}
+                datasetId={selectedDatasetId || undefined}
               />
             )}
           </motion.div>
