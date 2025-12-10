@@ -1,93 +1,94 @@
-import Link from 'next/link'
+import { motion } from 'framer-motion'
+import Layout from '@/components/Layout'
 
 export default function Settings() {
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
-          <Link href="/" className="text-blue-400 hover:text-blue-300 mr-4">
-            ← Back
-          </Link>
-          <h1 className="text-2xl font-bold text-white">Settings</h1>
-        </div>
-      </header>
-
+    <Layout title="Paramètres">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           {/* General Settings */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <div className="p-6 border-b border-gray-700">
-              <h2 className="text-lg font-semibold text-white">General</h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="glass-effect rounded-apple-lg border border-white/10 overflow-hidden"
+          >
+            <div className="p-6 border-b border-white/10">
+              <h2 className="text-lg font-semibold text-white">Général</h2>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Application Name
+                  Nom de l'Application
                 </label>
                 <input
                   type="text"
-                  defaultValue="AI Generator"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  defaultValue="Générateur IA"
+                  className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Output Directory
+                  Répertoire de Sortie
                 </label>
                 <input
                   type="text"
                   defaultValue="outputs/"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Theme
+                  Thème
                 </label>
-                <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
-                  <option selected>Dark</option>
-                  <option>Light</option>
+                <select className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option selected>Sombre</option>
+                  <option>Clair</option>
                   <option>Auto</option>
                 </select>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Performance Settings */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <div className="p-6 border-b border-gray-700">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="glass-effect rounded-apple-lg border border-white/10 overflow-hidden"
+          >
+            <div className="p-6 border-b border-white/10">
               <h2 className="text-lg font-semibold text-white">Performance</h2>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Max Parallel Jobs
+                  Tâches Parallèles Maximum
                 </label>
                 <input
                   type="number"
                   defaultValue={1}
                   min={1}
                   max={8}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Number of jobs that can run simultaneously (requires GPU memory)
+                  Nombre de tâches pouvant s'exécuter simultanément (nécessite de la mémoire GPU)
                 </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Generation Delay (seconds)
+                  Délai de Génération (secondes)
                 </label>
                 <input
                   type="number"
                   defaultValue={0.5}
                   step={0.1}
                   min={0}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Mock delay for testing (remove in production)
+                  Délai simulé pour les tests (à retirer en production)
                 </p>
               </div>
               <div className="flex items-center">
@@ -97,134 +98,179 @@ export default function Settings() {
                   className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded"
                 />
                 <label htmlFor="enable-cache" className="ml-2 text-sm text-gray-300">
-                  Enable caching for faster generations
+                  Activer la mise en cache pour des générations plus rapides
                 </label>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Model Settings */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <div className="p-6 border-b border-gray-700">
-              <h2 className="text-lg font-semibold text-white">Models</h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="glass-effect rounded-apple-lg border border-white/10 overflow-hidden"
+          >
+            <div className="p-6 border-b border-white/10">
+              <h2 className="text-lg font-semibold text-white">Modèles</h2>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Default Image Model
+                  Modèle d'Image par Défaut
                 </label>
-                <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
+                <select className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option selected>Stable Diffusion 1.5</option>
                   <option>SDXL</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Default Video Model
+                  Modèle de Vidéo par Défaut
                 </label>
-                <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
+                <select className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option selected>Stable Video Diffusion</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Model Cache Directory
+                  Répertoire de Cache des Modèles
                 </label>
                 <input
                   type="text"
                   defaultValue="models/"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* API Settings */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <div className="p-6 border-b border-gray-700">
-              <h2 className="text-lg font-semibold text-white">API Configuration</h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="glass-effect rounded-apple-lg border border-white/10 overflow-hidden"
+          >
+            <div className="p-6 border-b border-white/10">
+              <h2 className="text-lg font-semibold text-white">Configuration API</h2>
             </div>
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Backend URL
+                  URL du Backend
                 </label>
                 <input
                   type="text"
                   defaultValue="http://localhost:8000"
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  API Key (Optional)
+                  Clé API (Optionnel)
                 </label>
                 <input
                   type="password"
-                  placeholder="Enter API key..."
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                  placeholder="Entrez la clé API..."
+                  className="w-full px-3 py-2 glass-effect border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Required for production deployments with authentication
+                  Requis pour les déploiements en production avec authentification
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Storage Settings */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <div className="p-6 border-b border-gray-700">
-              <h2 className="text-lg font-semibold text-white">Storage</h2>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="glass-effect rounded-apple-lg border border-white/10 overflow-hidden"
+          >
+            <div className="p-6 border-b border-white/10">
+              <h2 className="text-lg font-semibold text-white">Stockage</h2>
             </div>
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-gray-300">Database</div>
+                  <div className="text-sm font-medium text-gray-300">Base de Données</div>
                   <div className="text-xs text-gray-400">SQLite (ai_generator.db)</div>
                 </div>
-                <button className="px-3 py-1 bg-gray-700 text-gray-300 text-sm rounded hover:bg-gray-600">
-                  Backup
-                </button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-3 py-1 glass-effect text-gray-300 text-sm rounded-xl hover:bg-white/5"
+                >
+                  Sauvegarder
+                </motion.button>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-gray-300">Clear Cache</div>
-                  <div className="text-xs text-gray-400">Free up disk space</div>
+                  <div className="text-sm font-medium text-gray-300">Vider le Cache</div>
+                  <div className="text-xs text-gray-400">Libérer de l'espace disque</div>
                 </div>
-                <button className="px-3 py-1 bg-red-900 text-red-300 text-sm rounded hover:bg-red-800">
-                  Clear
-                </button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-3 py-1 bg-red-900/50 text-red-300 text-sm rounded-xl hover:bg-red-800/50"
+                >
+                  Vider
+                </motion.button>
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-medium text-gray-300">Export Data</div>
-                  <div className="text-xs text-gray-400">Download all assets and metadata</div>
+                  <div className="text-sm font-medium text-gray-300">Exporter les Données</div>
+                  <div className="text-xs text-gray-400">Télécharger toutes les ressources et métadonnées</div>
                 </div>
-                <button className="px-3 py-1 bg-gray-700 text-gray-300 text-sm rounded hover:bg-gray-600">
-                  Export
-                </button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-3 py-1 glass-effect text-gray-300 text-sm rounded-xl hover:bg-white/5"
+                >
+                  Exporter
+                </motion.button>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Save Button */}
-          <div className="flex items-center justify-between">
-            <button className="px-4 py-2 bg-gray-700 text-gray-300 rounded-md hover:bg-gray-600">
-              Reset to Defaults
-            </button>
-            <button className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-              Save Changes
-            </button>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="flex items-center justify-between"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-2 glass-effect text-gray-300 rounded-xl hover:bg-white/5"
+            >
+              Réinitialiser
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg"
+            >
+              Enregistrer
+            </motion.button>
+          </motion.div>
 
-          <div className="bg-yellow-900/20 border border-yellow-700 p-4 rounded-lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="glass-effect border border-yellow-700/30 bg-yellow-500/10 p-4 rounded-xl"
+          >
             <h3 className="text-sm font-semibold text-yellow-300 mb-2">⚠️ Note</h3>
             <p className="text-xs text-gray-300">
-              Settings management is currently in development. Changes are not yet persisted.
+              La gestion des paramètres est en cours de développement. Les modifications ne sont pas encore persistantes.
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </Layout>
   )
 }
