@@ -98,7 +98,8 @@ def extract_archive(archive_path: Path, extract_to: Path) -> List[str]:
 
 def parse_csv_file(csv_path: Path) -> Dict:
     """Parse CSV file and extract image-label mappings."""
-    encodings_to_try = ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']
+    # List of encodings to try, in order of likelihood
+    encodings_to_try = ['utf-8', 'utf-8-sig', 'latin-1', 'cp1252', 'iso-8859-1', 'ascii']
     
     for encoding in encodings_to_try:
         try:
@@ -164,12 +165,21 @@ def parse_csv_file(csv_path: Path) -> Dict:
             # Try next encoding
             continue
         except csv.Error as e:
-            raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"CSV parsing error: {str(e)}. Please ensure your CSV file is properly formatted with consistent delimiters and quoted fields."
+            )
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Failed to parse CSV: {str(e)}. Common issues: invalid file format, corrupted file, or unsupported CSV structure."
+            )
     
     # If all encodings failed
-    raise HTTPException(status_code=400, detail="Failed to parse CSV: Unable to decode file with common encodings")
+    raise HTTPException(
+        status_code=400, 
+        detail="Failed to decode CSV file. Please ensure the file is a valid CSV with UTF-8 or common encoding."
+    )
 
 
 @router.post("/", response_model=FileUploadResponse)

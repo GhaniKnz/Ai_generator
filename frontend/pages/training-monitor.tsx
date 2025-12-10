@@ -77,6 +77,7 @@ export default function TrainingMonitor() {
   const [metrics, setMetrics] = useState<TrainingMetrics[]>([])
   
   // Fetch all training jobs
+  // TODO: Consider WebSocket for real-time updates to reduce polling overhead
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -102,6 +103,7 @@ export default function TrainingMonitor() {
   }, [])
   
   // Fetch progress for selected job
+  // TODO: Consider WebSocket for real-time updates to reduce polling overhead
   useEffect(() => {
     if (!selectedJobId) return
     

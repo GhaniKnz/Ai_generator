@@ -61,12 +61,15 @@ elif [ -f ".venv/Scripts/activate" ]; then
     echo -e "${GREEN}✓ Virtual environment activated (Windows)${NC}"
 else
     echo -e "${YELLOW}⚠ Could not find virtual environment activation script${NC}"
+    echo -e "${YELLOW}Please create a virtual environment first: python3 -m venv .venv${NC}"
     exit 1
 fi
 
 # Verify activation worked
 if [ -z "$VIRTUAL_ENV" ]; then
     echo -e "${YELLOW}⚠ Virtual environment may not be activated properly${NC}"
+    echo -e "${YELLOW}Refusing to continue to avoid installing packages globally${NC}"
+    exit 1
 fi
 
 if [ ! -f ".venv/installed" ]; then
@@ -106,8 +109,14 @@ if check_port 8000; then
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         PID=$(lsof -t -i:8000 2>/dev/null)
         if [ -n "$PID" ]; then
-            kill $PID || true
-            sleep 1
+            echo -e "${BLUE}Attempting graceful shutdown...${NC}"
+            kill -TERM $PID 2>/dev/null || true
+            sleep 2
+            # Check if still running
+            if kill -0 $PID 2>/dev/null; then
+                echo -e "${YELLOW}Forcing shutdown...${NC}"
+                kill -KILL $PID 2>/dev/null || true
+            fi
         fi
     fi
 fi
@@ -119,8 +128,14 @@ if check_port 3000; then
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         PID=$(lsof -t -i:3000 2>/dev/null)
         if [ -n "$PID" ]; then
-            kill $PID || true
-            sleep 1
+            echo -e "${BLUE}Attempting graceful shutdown...${NC}"
+            kill -TERM $PID 2>/dev/null || true
+            sleep 2
+            # Check if still running
+            if kill -0 $PID 2>/dev/null; then
+                echo -e "${YELLOW}Forcing shutdown...${NC}"
+                kill -KILL $PID 2>/dev/null || true
+            fi
         fi
     fi
 fi
