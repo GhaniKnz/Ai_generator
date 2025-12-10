@@ -8,7 +8,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import asyncio
 
-router = APIRouter(prefix="/api/data-collection", tags=["data-collection"])
+router = APIRouter(prefix="/data-collection", tags=["data-collection"])
 
 # In-memory storage for demo (replace with database in production)
 search_results_db: Dict[str, Dict] = {}

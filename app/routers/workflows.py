@@ -4,7 +4,7 @@ from typing import Dict, List
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from ..jobs import JobQueue, build_job_queue
-from ..schemas import GenerateTextToImageRequest, GenerateTextToVideoRequest, GenerateImageToVideoRequest
+from ..schemas import TextToImageRequest, TextToVideoRequest, ImageToVideoRequest
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 
@@ -82,7 +82,7 @@ async def execute_workflow(
             model = node.data.get('model', 'Stable Diffusion 1.5')
             
             # Create generation request
-            gen_request = GenerateTextToImageRequest(
+            gen_request = TextToImageRequest(
                 prompt=prompt,
                 negative_prompt="",
                 num_outputs=1,
@@ -106,7 +106,7 @@ async def execute_workflow(
             # Check if we have image input from previous node
             if input_data and input_data.endswith('.png'):
                 # Image-to-video
-                gen_request = GenerateImageToVideoRequest(
+                gen_request = ImageToVideoRequest(
                     image_path=input_data,
                     duration=float(duration),
                     fps=24,
@@ -116,7 +116,7 @@ async def execute_workflow(
             else:
                 # Text-to-video
                 prompt = input_data or node.data.get('prompt', 'a serene landscape')
-                gen_request = GenerateTextToVideoRequest(
+                gen_request = TextToVideoRequest(
                     prompt=prompt,
                     negative_prompt="",
                     duration=float(duration),
