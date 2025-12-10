@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import Link from 'next/link'
+import { motion } from 'framer-motion'
+import Layout from '@/components/Layout'
+import { SparklesIcon, PhotoIcon } from '@heroicons/react/24/outline'
 
 export default function TextToImage() {
   const [prompt, setPrompt] = useState('')
@@ -46,23 +48,35 @@ export default function TextToImage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center">
-          <Link href="/" className="text-blue-400 hover:text-blue-300 mr-4">
-            ← Back
-          </Link>
-          <h1 className="text-2xl font-bold text-white">Text to Image</h1>
-        </div>
-      </header>
-
+    <Layout title="Texte vers Image">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <h2 className="text-3xl font-bold mb-2">
+            <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+              Texte vers Image
+            </span>
+          </h2>
+          <p className="text-gray-400">Générez des images époustouflantes à partir de descriptions textuelles</p>
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Panel - Controls */}
-          <div className="space-y-6">
-            <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-              <h2 className="text-xl font-semibold text-white mb-4">Settings</h2>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="space-y-6"
+          >
+            <div className="glass-effect rounded-apple-lg p-6 border border-white/10">
+              <div className="flex items-center space-x-2 mb-6">
+                <SparklesIcon className="w-6 h-6 text-blue-400" />
+                <h2 className="text-xl font-semibold text-white">Paramètres</h2>
+              </div>
               
               <div className="space-y-4">
                 <div>
@@ -72,34 +86,34 @@ export default function TextToImage() {
                   <textarea
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     rows={4}
-                    placeholder="Describe the image you want to generate..."
+                    placeholder="Décrivez l'image que vous souhaitez générer..."
                   />
                   <p className="text-xs text-gray-400 mt-1">
-                    Be specific and descriptive for best results
+                    Soyez précis et descriptif pour de meilleurs résultats
                   </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Negative Prompt (Optional)
+                    Prompt Négatif (Optionnel)
                   </label>
                   <textarea
                     value={negativePrompt}
                     onChange={(e) => setNegativePrompt(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     rows={2}
-                    placeholder="Things to avoid in the image..."
+                    placeholder="Éléments à éviter dans l'image..."
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Model
+                      Modèle
                     </label>
-                    <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
+                    <select className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                       <option>Stable Diffusion 1.5</option>
                       <option>SDXL</option>
                     </select>
@@ -107,12 +121,12 @@ export default function TextToImage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Style Preset
+                      Style Prédéfini
                     </label>
-                    <select className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white">
-                      <option value="cinematic">Cinematic</option>
+                    <select className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <option value="cinematic">Cinématique</option>
                       <option value="anime">Anime</option>
-                      <option value="realistic">Realistic</option>
+                      <option value="realistic">Réaliste</option>
                       <option value="illustration">Illustration</option>
                       <option value="concept_art">Concept Art</option>
                     </select>
@@ -122,30 +136,30 @@ export default function TextToImage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Width
+                      Largeur
                     </label>
                     <input
                       type="number"
                       defaultValue={768}
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Height
+                      Hauteur
                     </label>
                     <input
                       type="number"
                       defaultValue={768}
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    CFG Scale: 7.5
+                    Échelle CFG: 7.5
                   </label>
                   <input
                     type="range"
@@ -159,7 +173,7 @@ export default function TextToImage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Steps: 30
+                    Étapes: 30
                   </label>
                   <input
                     type="range"
@@ -170,33 +184,47 @@ export default function TextToImage() {
                   />
                 </div>
 
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleGenerate}
                   disabled={!prompt || generating}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-semibold py-3 px-6 rounded-md transition-colors"
+                  className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-3 px-6 rounded-xl transition-all hover:shadow-lg disabled:opacity-50"
                 >
-                  {generating ? 'Generating...' : 'Generate Images'}
-                </button>
+                  {generating ? 'Génération en cours...' : 'Générer des Images'}
+                </motion.button>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Panel - Preview */}
-          <div className="space-y-6">
-            <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
-              <h2 className="text-xl font-semibold text-white mb-4">Preview</h2>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="space-y-6"
+          >
+            <div className="glass-effect rounded-apple-lg p-6 border border-white/10">
+              <div className="flex items-center space-x-2 mb-6">
+                <PhotoIcon className="w-6 h-6 text-cyan-400" />
+                <h2 className="text-xl font-semibold text-white">Aperçu</h2>
+              </div>
               
               {!result && !generating && (
-                <div className="aspect-square bg-gray-700 rounded-lg flex items-center justify-center">
-                  <p className="text-gray-400">Your generated images will appear here</p>
+                <div className="aspect-square bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl border border-white/10 flex items-center justify-center">
+                  <p className="text-gray-400">Vos images générées apparaîtront ici</p>
                 </div>
               )}
 
               {generating && (
-                <div className="aspect-square bg-gray-700 rounded-lg flex items-center justify-center">
+                <div className="aspect-square bg-gradient-to-br from-blue-900/20 to-cyan-900/20 rounded-xl border border-blue-500/20 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-                    <p className="text-gray-300">Generating...</p>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4"
+                    ></motion.div>
+                    <p className="text-gray-300">Génération en cours...</p>
                   </div>
                 </div>
               )}
@@ -204,41 +232,51 @@ export default function TextToImage() {
               {result && result.status === 'done' && (
                 <div className="space-y-4">
                   {result.outputs.map((output: any, index: number) => (
-                    <div key={index} className="bg-gray-700 p-4 rounded-lg">
-                      <div className="aspect-square bg-gray-600 rounded-lg mb-2 flex items-center justify-center">
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="glass-effect border border-white/10 p-4 rounded-xl"
+                    >
+                      <div className="aspect-square bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-lg mb-2 flex items-center justify-center">
                         <p className="text-gray-400">Image {index + 1}</p>
                       </div>
-                      <p className="text-sm text-gray-400">Path: {output.path}</p>
-                    </div>
+                      <p className="text-sm text-gray-400">Chemin: {output.path}</p>
+                    </motion.div>
                   ))}
                 </div>
               )}
 
               {result && result.status === 'failed' && (
-                <div className="aspect-square bg-red-900/20 border border-red-700 rounded-lg flex items-center justify-center">
+                <div className="aspect-square bg-red-900/20 border border-red-700/50 rounded-xl flex items-center justify-center">
                   <div className="text-center px-4">
-                    <p className="text-red-400 font-semibold mb-2">Generation Failed</p>
-                    <p className="text-gray-400 text-sm">{result.error || 'Unknown error'}</p>
+                    <p className="text-red-400 font-semibold mb-2">Échec de la génération</p>
+                    <p className="text-gray-400 text-sm">{result.error || 'Erreur inconnue'}</p>
                   </div>
                 </div>
               )}
             </div>
 
             {jobId && (
-              <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                <h3 className="text-sm font-semibold text-gray-300 mb-2">Job Details</h3>
-                <p className="text-xs text-gray-400">Job ID: {jobId}</p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-effect rounded-apple-lg p-4 border border-white/10"
+              >
+                <h3 className="text-sm font-semibold text-gray-300 mb-2">Détails du Travail</h3>
+                <p className="text-xs text-gray-400">ID du Travail: {jobId}</p>
                 {result && (
                   <>
-                    <p className="text-xs text-gray-400">Status: {result.status}</p>
-                    <p className="text-xs text-gray-400">Progress: {Math.round(result.progress * 100)}%</p>
+                    <p className="text-xs text-gray-400">Statut: {result.status}</p>
+                    <p className="text-xs text-gray-400">Progression: {Math.round(result.progress * 100)}%</p>
                   </>
                 )}
-              </div>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </Layout>
   )
 }
