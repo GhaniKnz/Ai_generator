@@ -280,6 +280,7 @@ async def get_supported_formats() -> dict:
         "videos": sorted(list(SUPPORTED_VIDEO_FORMATS)),
         "audio": sorted(list(SUPPORTED_AUDIO_FORMATS)),
         "archives": sorted(list(SUPPORTED_ARCHIVE_FORMATS)),
+        "csv": sorted(list(SUPPORTED_CSV_FORMATS)),
         "all": sorted(list(ALL_SUPPORTED_FORMATS))
     }
 

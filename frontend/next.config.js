@@ -9,6 +9,20 @@ const nextConfig = {
       },
     ]
   },
+  async headers() {
+    return [
+      {
+        // Prevent caching of API responses to avoid service worker issues
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, must-revalidate',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig
