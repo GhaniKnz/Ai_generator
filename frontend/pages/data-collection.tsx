@@ -199,9 +199,9 @@ export default function DataCollection() {
             disabled={searching || !query.trim()}
             className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white font-semibold py-3 rounded-lg transition"
           >
-            {searching ? '🔍 Searching...' : '🔍 Search'}
+            {searching ? '🔍 Rechercher...' : '🔍 Rechercher'}
           </button>
-        </div>
+        </motion.div>
 
         {/* Results Section */}
         {searchResults.length > 0 && (

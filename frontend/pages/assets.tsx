@@ -145,7 +145,7 @@ export default function Assets() {
               </motion.button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Tags */}
         <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
@@ -162,14 +162,14 @@ export default function Assets() {
           </div>
         </div>
 
-        <div className="mt-8 bg-blue-900/20 border border-blue-700 p-6 rounded-lg">
-          <h3 className="text-sm font-semibold text-blue-300 mb-3">💡 Asset Management Tips</h3>
+        <motion.div className="mt-8 bg-blue-900/20 border border-blue-700 p-6 rounded-lg">
+          <h3 className="text-sm font-semibold text-blue-300 mb-3">💡 Conseils de Gestion des Ressources</h3>
           <ul className="text-sm text-gray-300 space-y-2">
-            <li>• Use tags to organize your generations by style, subject, or project</li>
-            <li>• Click on any asset to view details, metadata, and generation parameters</li>
-            <li>• Duplicate successful generations with parameter variations</li>
-            <li>• Export assets or add them to projects for complex workflows</li>
-            <li>• Assets are automatically saved when generation jobs complete</li>
+            <li>• Utilisez des tags pour organiser vos générations par style, sujet ou projet</li>
+            <li>• Cliquez sur une ressource pour voir les détails, métadonnées et paramètres de génération</li>
+            <li>• Dupliquez les générations réussies avec des variations de paramètres</li>
+            <li>• Exportez les ressources ou ajoutez-les à des projets pour des workflows complexes</li>
+            <li>• Les ressources sont automatiquement sauvegardées lorsque les travaux de génération se terminent</li>
           </ul>
         </motion.div>
       </div>
