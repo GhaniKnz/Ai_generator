@@ -75,3 +75,4 @@ htmlcov/
 tmp/
 temp/
 *.tmp
+frontend/tsconfig.tsbuildinfo
