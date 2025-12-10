@@ -4,7 +4,7 @@ from typing import Dict, List
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from ..jobs import JobQueue, build_job_queue
-from ..schemas import GenerateTextToImageRequest, GenerateTextToVideoRequest, GenerateImageToVideoRequest
+from ..schemas import TextToImageRequest, TextToVideoRequest, ImageToVideoRequest
 
 router = APIRouter(prefix="/workflows", tags=["workflows"])
 
