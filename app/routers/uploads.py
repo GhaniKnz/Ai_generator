@@ -98,66 +98,78 @@ def extract_archive(archive_path: Path, extract_to: Path) -> List[str]:
 
 def parse_csv_file(csv_path: Path) -> Dict:
     """Parse CSV file and extract image-label mappings."""
-    try:
-        with open(csv_path, 'r', encoding='utf-8') as f:
-            # Try to detect delimiter
-            sample = f.read(1024)
-            f.seek(0)
-            sniffer = csv.Sniffer()
-            try:
-                delimiter = sniffer.sniff(sample).delimiter
-            except:
-                delimiter = ','
-            
-            reader = csv.DictReader(f, delimiter=delimiter)
-            rows = list(reader)
-            
-            # Try to identify image and label columns
-            image_label_map = {}
-            image_col = None
-            label_col = None
-            
-            # Common column names for images
-            image_column_names = ['image', 'filename', 'file', 'img', 'path', 'image_path', 'file_name']
-            # Common column names for labels
-            label_column_names = ['label', 'class', 'category', 'tag', 'description', 'caption', 'text']
-            
-            if len(rows) > 0:
-                columns = list(rows[0].keys())
+    encodings_to_try = ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']
+    
+    for encoding in encodings_to_try:
+        try:
+            with open(csv_path, 'r', encoding=encoding) as f:
+                # Try to detect delimiter
+                sample = f.read(1024)
+                f.seek(0)
+                sniffer = csv.Sniffer()
+                try:
+                    delimiter = sniffer.sniff(sample).delimiter
+                except csv.Error:
+                    delimiter = ','
                 
-                # Find image column
-                for col in columns:
-                    if col.lower() in image_column_names:
-                        image_col = col
-                        break
-                if not image_col:
-                    image_col = columns[0]  # Default to first column
+                reader = csv.DictReader(f, delimiter=delimiter)
+                rows = list(reader)
                 
-                # Find label column
-                for col in columns:
-                    if col.lower() in label_column_names:
-                        label_col = col
-                        break
-                if not label_col and len(columns) > 1:
-                    label_col = columns[1]  # Default to second column
+                # Try to identify image and label columns
+                image_label_map = {}
+                image_col = None
+                label_col = None
                 
-                # Build mapping
-                for row in rows:
-                    if image_col in row and label_col in row:
-                        image_name = row[image_col]
-                        label = row[label_col]
-                        if image_name and label:
-                            image_label_map[image_name] = label
-            
-            return {
-                'total_rows': len(rows),
-                'image_column': image_col,
-                'label_column': label_col,
-                'mappings': image_label_map,
-                'columns': list(rows[0].keys()) if rows else []
-            }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
+                # Common column names for images
+                image_column_names = ['image', 'filename', 'file', 'img', 'path', 'image_path', 'file_name']
+                # Common column names for labels
+                label_column_names = ['label', 'class', 'category', 'tag', 'description', 'caption', 'text']
+                
+                if len(rows) > 0:
+                    columns = list(rows[0].keys())
+                    
+                    # Find image column
+                    for col in columns:
+                        if col.lower() in image_column_names:
+                            image_col = col
+                            break
+                    if not image_col:
+                        image_col = columns[0]  # Default to first column
+                    
+                    # Find label column
+                    for col in columns:
+                        if col.lower() in label_column_names:
+                            label_col = col
+                            break
+                    if not label_col and len(columns) > 1:
+                        label_col = columns[1]  # Default to second column
+                    
+                    # Build mapping
+                    for row in rows:
+                        if image_col in row and label_col in row:
+                            image_name = row[image_col]
+                            label = row[label_col]
+                            if image_name and label:
+                                image_label_map[image_name] = label
+                
+                return {
+                    'total_rows': len(rows),
+                    'image_column': image_col,
+                    'label_column': label_col,
+                    'mappings': image_label_map,
+                    'columns': list(rows[0].keys()) if rows else [],
+                    'encoding': encoding
+                }
+        except (UnicodeDecodeError, UnicodeError):
+            # Try next encoding
+            continue
+        except csv.Error as e:
+            raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to parse CSV: {str(e)}")
+    
+    # If all encodings failed
+    raise HTTPException(status_code=400, detail="Failed to parse CSV: Unable to decode file with common encodings")
 
 
 @router.post("/", response_model=FileUploadResponse)

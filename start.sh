@@ -53,7 +53,21 @@ if [ ! -d ".venv" ]; then
 fi
 
 echo -e "${BLUE}Activating virtual environment...${NC}"
-source .venv/bin/activate || . .venv/Scripts/activate 2>/dev/null || true
+if [ -f ".venv/bin/activate" ]; then
+    source .venv/bin/activate
+    echo -e "${GREEN}✓ Virtual environment activated (Unix)${NC}"
+elif [ -f ".venv/Scripts/activate" ]; then
+    source .venv/Scripts/activate
+    echo -e "${GREEN}✓ Virtual environment activated (Windows)${NC}"
+else
+    echo -e "${YELLOW}⚠ Could not find virtual environment activation script${NC}"
+    exit 1
+fi
+
+# Verify activation worked
+if [ -z "$VIRTUAL_ENV" ]; then
+    echo -e "${YELLOW}⚠ Virtual environment may not be activated properly${NC}"
+fi
 
 if [ ! -f ".venv/installed" ]; then
     echo -e "${BLUE}Installing Python dependencies...${NC}"
@@ -90,7 +104,11 @@ if check_port 8000; then
     read -p "Do you want to kill the process? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        kill $(lsof -t -i:8000) || true
+        PID=$(lsof -t -i:8000 2>/dev/null)
+        if [ -n "$PID" ]; then
+            kill $PID || true
+            sleep 1
+        fi
     fi
 fi
 
@@ -99,7 +117,11 @@ if check_port 3000; then
     read -p "Do you want to kill the process? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        kill $(lsof -t -i:3000) || true
+        PID=$(lsof -t -i:3000 2>/dev/null)
+        if [ -n "$PID" ]; then
+            kill $PID || true
+            sleep 1
+        fi
     fi
 fi
 echo ""

@@ -1,6 +1,15 @@
 import { useState, useRef, DragEvent } from 'react'
 import { CloudArrowUpIcon, DocumentIcon, PhotoIcon, VideoCameraIcon, MusicalNoteIcon, ArchiveBoxIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
+// File type descriptions for UI
+const FILE_TYPE_DESCRIPTIONS = {
+  images: 'Images (PNG, JPG, GIF, etc.)',
+  videos: 'Videos (MP4, AVI, MOV, etc.)',
+  audio: 'Audio (WAV, MP3, etc.)',
+  archives: 'Archives (ZIP, RAR, etc.)',
+  csv: 'CSV files for labels'
+}
+
 interface FileUploadProps {
   onUploadComplete?: (files: UploadedFile[]) => void
   onUploadError?: (error: string) => void
@@ -238,8 +247,8 @@ export default function FileUpload({
         </p>
         
         <div className="text-sm text-gray-500">
-          <p>Supports: Images (PNG, JPG, GIF, etc.), Videos (MP4, AVI, MOV, etc.)</p>
-          <p>Audio (WAV, MP3, etc.), Archives (ZIP, RAR, etc.), CSV files for labels</p>
+          <p>Supports: {FILE_TYPE_DESCRIPTIONS.images}, {FILE_TYPE_DESCRIPTIONS.videos}</p>
+          <p>{FILE_TYPE_DESCRIPTIONS.audio}, {FILE_TYPE_DESCRIPTIONS.archives}, {FILE_TYPE_DESCRIPTIONS.csv}</p>
           <p className="mt-2">Max file size: {maxSizeMB}MB per file</p>
         </div>
       </div>
