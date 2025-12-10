@@ -112,8 +112,8 @@ if check_port 8000; then
             echo -e "${BLUE}Attempting graceful shutdown...${NC}"
             kill -TERM $PID 2>/dev/null || true
             sleep 2
-            # Check if still running
-            if kill -0 $PID 2>/dev/null; then
+            # Check if still running (only if PID is set)
+            if [ -n "$PID" ] && kill -0 $PID 2>/dev/null; then
                 echo -e "${YELLOW}Forcing shutdown...${NC}"
                 kill -KILL $PID 2>/dev/null || true
             fi
@@ -131,8 +131,8 @@ if check_port 3000; then
             echo -e "${BLUE}Attempting graceful shutdown...${NC}"
             kill -TERM $PID 2>/dev/null || true
             sleep 2
-            # Check if still running
-            if kill -0 $PID 2>/dev/null; then
+            # Check if still running (only if PID is set)
+            if [ -n "$PID" ] && kill -0 $PID 2>/dev/null; then
                 echo -e "${YELLOW}Forcing shutdown...${NC}"
                 kill -KILL $PID 2>/dev/null || true
             fi

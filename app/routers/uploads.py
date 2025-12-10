@@ -12,6 +12,11 @@ from pydantic import BaseModel
 
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
+# CSV parsing configuration
+CSV_ENCODINGS_TO_TRY = ['utf-8', 'utf-8-sig', 'latin-1', 'cp1252', 'iso-8859-1', 'ascii']
+CSV_IMAGE_COLUMN_NAMES = ['image', 'filename', 'file', 'img', 'path', 'image_path', 'file_name']
+CSV_LABEL_COLUMN_NAMES = ['label', 'class', 'category', 'tag', 'description', 'caption', 'text']
+
 # Supported file extensions
 SUPPORTED_IMAGE_FORMATS = {
     '.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.tiff', '.tif', 
@@ -98,10 +103,8 @@ def extract_archive(archive_path: Path, extract_to: Path) -> List[str]:
 
 def parse_csv_file(csv_path: Path) -> Dict:
     """Parse CSV file and extract image-label mappings."""
-    # List of encodings to try, in order of likelihood
-    encodings_to_try = ['utf-8', 'utf-8-sig', 'latin-1', 'cp1252', 'iso-8859-1', 'ascii']
-    
-    for encoding in encodings_to_try:
+    # Try different encodings in order of likelihood
+    for encoding in CSV_ENCODINGS_TO_TRY:
         try:
             with open(csv_path, 'r', encoding=encoding) as f:
                 # Try to detect delimiter
@@ -121,25 +124,20 @@ def parse_csv_file(csv_path: Path) -> Dict:
                 image_col = None
                 label_col = None
                 
-                # Common column names for images
-                image_column_names = ['image', 'filename', 'file', 'img', 'path', 'image_path', 'file_name']
-                # Common column names for labels
-                label_column_names = ['label', 'class', 'category', 'tag', 'description', 'caption', 'text']
-                
                 if len(rows) > 0:
                     columns = list(rows[0].keys())
                     
-                    # Find image column
+                    # Find image column using configured names
                     for col in columns:
-                        if col.lower() in image_column_names:
+                        if col.lower() in CSV_IMAGE_COLUMN_NAMES:
                             image_col = col
                             break
                     if not image_col:
                         image_col = columns[0]  # Default to first column
                     
-                    # Find label column
+                    # Find label column using configured names
                     for col in columns:
-                        if col.lower() in label_column_names:
+                        if col.lower() in CSV_LABEL_COLUMN_NAMES:
                             label_col = col
                             break
                     if not label_col and len(columns) > 1:

@@ -55,6 +55,9 @@ interface TrainingMetrics {
   timestamp: number
 }
 
+// Default training configuration
+const DEFAULT_LEARNING_RATE = 0.0001
+
 interface TrainingProgress {
   job_id: string
   status: string
@@ -121,7 +124,7 @@ export default function TrainingMonitor() {
                 epoch: data.current_epoch || 0,
                 step: data.current_step,
                 loss: data.loss,
-                learning_rate: data.config?.learning_rate || 0.0001,
+                learning_rate: data.config?.learning_rate || DEFAULT_LEARNING_RATE,
                 timestamp: Date.now()
               }
               return [...prev.slice(-50), newMetric]
