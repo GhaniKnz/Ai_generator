@@ -228,12 +228,12 @@ export default function Lab() {
 
   return (
     <Layout title="Mode Lab" showSidebar={false}>
-      <div className="h-full flex flex-col">
+      <div className="h-[calc(100vh-57px)] flex flex-col">
         {/* Toolbar */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-effect border-b border-white/10 p-4"
+          className="glass-effect border-b border-white/10 p-4 flex-shrink-0"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -330,7 +330,7 @@ export default function Lab() {
         </motion.div>
 
         {/* Canvas */}
-        <div className="flex-1 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
+        <div className="flex-1 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] min-h-0">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -339,7 +339,7 @@ export default function Lab() {
             onConnect={onConnect}
             nodeTypes={nodeTypes}
             fitView
-            style={{ background: 'transparent' }}
+            style={{ width: '100%', height: '100%', background: 'transparent' }}
           >
             <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#4b5563" />
             <Controls style={reactFlowStyles.controls} />
@@ -363,7 +363,7 @@ export default function Lab() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-effect border-t border-white/10 p-3"
+          className="glass-effect border-t border-white/10 p-3 flex-shrink-0"
         >
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-6 text-gray-400">
