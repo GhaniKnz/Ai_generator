@@ -107,7 +107,7 @@ if check_port 8000; then
     read -p "Do you want to kill the process? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        PID=$(lsof -t -i:8000 2>/dev/null)
+        PID=$(lsof -t -i:8000 2>/dev/null | head -1)
         if [ -n "$PID" ]; then
             echo -e "${BLUE}Attempting graceful shutdown...${NC}"
             kill -TERM $PID 2>/dev/null || true
@@ -126,7 +126,7 @@ if check_port 3000; then
     read -p "Do you want to kill the process? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        PID=$(lsof -t -i:3000 2>/dev/null)
+        PID=$(lsof -t -i:3000 2>/dev/null | head -1)
         if [ -n "$PID" ]; then
             echo -e "${BLUE}Attempting graceful shutdown...${NC}"
             kill -TERM $PID 2>/dev/null || true

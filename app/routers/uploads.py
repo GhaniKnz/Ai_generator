@@ -6,7 +6,7 @@ import tarfile
 import csv
 import json
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from fastapi import APIRouter, File, UploadFile, HTTPException, Form
 from pydantic import BaseModel
 
@@ -101,7 +101,7 @@ def extract_archive(archive_path: Path, extract_to: Path) -> List[str]:
     return extracted_files
 
 
-def parse_csv_file(csv_path: Path) -> Dict:
+def parse_csv_file(csv_path: Path) -> Dict[str, Any]:
     """Parse CSV file and extract image-label mappings."""
     # Try different encodings in order of likelihood
     for encoding in CSV_ENCODINGS_TO_TRY:
