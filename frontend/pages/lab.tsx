@@ -80,12 +80,22 @@ const initialEdges: Edge[] = [
 ]
 
 const nodeTemplates = [
-  { type: 'textNode', label: 'Text Input', icon: '📝' },
-  { type: 'imageGenNode', label: 'Image Generator', icon: '🎨' },
-  { type: 'videoGenNode', label: 'Video Generator', icon: '🎬' },
+  { type: 'textNode', label: 'Entrée Texte', icon: '📝' },
+  { type: 'imageGenNode', label: 'Générateur d\'Image', icon: '🎨' },
+  { type: 'videoGenNode', label: 'Générateur de Vidéo', icon: '🎬' },
   { type: 'upscaleNode', label: 'Upscaler', icon: '⬆️' },
-  { type: 'outputNode', label: 'Output', icon: '📤' },
+  { type: 'outputNode', label: 'Sortie', icon: '📤' },
 ]
+
+// Shared ReactFlow styles
+const reactFlowStyles = {
+  controls: {
+    background: 'rgba(29, 29, 31, 0.8)',
+    backdropFilter: 'blur(10px)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '12px'
+  }
+}
 
 export default function Lab() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
@@ -217,7 +227,7 @@ export default function Lab() {
   }
 
   return (
-    <Layout title="Lab Mode" showSidebar={false}>
+    <Layout title="Mode Lab" showSidebar={false}>
       <div className="h-full flex flex-col">
         {/* Toolbar */}
         <motion.div
@@ -234,7 +244,7 @@ export default function Lab() {
                 className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all"
               >
                 <PlusIcon className="w-5 h-5" />
-                <span>Add Node</span>
+                <span>Ajouter Nœud</span>
               </motion.button>
               
               <motion.button
@@ -244,7 +254,7 @@ export default function Lab() {
                 className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
               >
                 <TrashIcon className="w-5 h-5" />
-                <span>Clear</span>
+                <span>Effacer</span>
               </motion.button>
 
               <motion.button
@@ -254,7 +264,7 @@ export default function Lab() {
                 className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
               >
                 <DocumentDuplicateIcon className="w-5 h-5" />
-                <span>Validate</span>
+                <span>Valider</span>
               </motion.button>
             </div>
 
@@ -266,7 +276,7 @@ export default function Lab() {
                 className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
               >
                 <ArrowUpTrayIcon className="w-5 h-5" />
-                <span>Import</span>
+                <span>Importer</span>
               </motion.button>
 
               <motion.button
@@ -276,7 +286,7 @@ export default function Lab() {
                 className="flex items-center space-x-2 px-4 py-2 glass-effect text-gray-300 rounded-xl hover:text-white hover:bg-white/5 transition-all"
               >
                 <ArrowDownTrayIcon className="w-5 h-5" />
-                <span>Export</span>
+                <span>Exporter</span>
               </motion.button>
 
               <motion.button
@@ -287,7 +297,7 @@ export default function Lab() {
                 className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50"
               >
                 <PlayIcon className="w-5 h-5" />
-                <span>{running ? 'Running...' : 'Run All'}</span>
+                <span>{running ? 'En cours...' : 'Exécuter'}</span>
               </motion.button>
             </div>
           </div>
@@ -320,7 +330,7 @@ export default function Lab() {
         </motion.div>
 
         {/* Canvas */}
-        <div className="flex-1 bg-gradient-to-br from-black via-apple-gray-900 to-black">
+        <div className="flex-1 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460]">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -329,12 +339,12 @@ export default function Lab() {
             onConnect={onConnect}
             nodeTypes={nodeTypes}
             fitView
-            className="bg-transparent"
+            style={{ background: 'transparent' }}
           >
-            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#374151" />
-            <Controls className="glass-effect border border-white/10 rounded-xl overflow-hidden" />
+            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#4b5563" />
+            <Controls style={reactFlowStyles.controls} />
             <MiniMap
-              className="glass-effect border border-white/10 rounded-xl overflow-hidden"
+              style={reactFlowStyles.controls}
               nodeColor={(node) => {
                 switch (node.type) {
                   case 'textNode': return '#3b82f6'
@@ -357,15 +367,15 @@ export default function Lab() {
         >
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-6 text-gray-400">
-              <span>Nodes: <span className="text-white font-semibold">{nodes.length}</span></span>
-              <span>Connections: <span className="text-white font-semibold">{edges.length}</span></span>
+              <span>Nœuds: <span className="text-white font-semibold">{nodes.length}</span></span>
+              <span>Connexions: <span className="text-white font-semibold">{edges.length}</span></span>
               <span className="flex items-center">
                 <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-                Ready
+                Prêt
               </span>
             </div>
             <div className="text-gray-400">
-              Drag to connect nodes • Shift+Click to select multiple
+              Glisser pour connecter • Shift+Clic pour sélection multiple
             </div>
           </div>
         </motion.div>

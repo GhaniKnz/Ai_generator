@@ -1,16 +1,14 @@
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { motion } from 'framer-motion'
+import Layout from '@/components/Layout'
 import { 
   PhotoIcon, 
   VideoCameraIcon, 
   BeakerIcon, 
   FolderIcon, 
   CpuChipIcon, 
-  Cog6ToothIcon,
-  ChartBarIcon,
-  CloudArrowUpIcon,
-  BookOpenIcon
+  CloudArrowUpIcon
 } from '@heroicons/react/24/outline'
 
 export default function Home() {
@@ -62,187 +60,100 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-apple-gray-900 to-black">
-      {/* Header */}
-      <header className="glass-effect sticky top-0 z-50 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">AI Generator</h1>
-          <div className="flex items-center space-x-4">
-            <Link href="/settings" className="text-gray-400 hover:text-white transition-colors">
-              <Cog6ToothIcon className="w-6 h-6" />
-            </Link>
-            <Link href="/monitoring" className="text-gray-400 hover:text-white transition-colors">
-              <ChartBarIcon className="w-6 h-6" />
-            </Link>
-          </div>
-        </div>
-      </header>
+    <Layout title="">
+      <div className="max-w-6xl mx-auto px-8 py-16">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-6xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Générateur IA
+            </span>
+          </h2>
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            Une plateforme complète pour créer des images et vidéos époustouflantes avec la technologie IA de pointe.
+          </p>
+        </motion.div>
 
-      <div className="flex h-[calc(100vh-73px)]">
-        {/* Sidebar */}
-        <aside className="w-64 glass-effect border-r border-white/10">
-          <nav className="p-4 space-y-1">
-            <Link href="/text-to-image" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <PhotoIcon className="w-5 h-5" />
-              <span>Text to Image</span>
-            </Link>
-            <Link href="/text-to-video" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <VideoCameraIcon className="w-5 h-5" />
-              <span>Text to Video</span>
-            </Link>
-            <Link href="/image-to-video" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <CloudArrowUpIcon className="w-5 h-5" />
-              <span>Image to Video</span>
-            </Link>
-            <Link href="/lab" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <BeakerIcon className="w-5 h-5" />
-              <span>Lab Mode</span>
-            </Link>
-            <div className="border-t border-white/10 my-3"></div>
-            <Link href="/datasets" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <FolderIcon className="w-5 h-5" />
-              <span>Datasets</span>
-            </Link>
-            <Link href="/training" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <CpuChipIcon className="w-5 h-5" />
-              <span>Training</span>
-            </Link>
-            <Link href="/training-monitor" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              <span>Training Monitor</span>
-            </Link>
-            <Link href="/training-guide" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <BookOpenIcon className="w-5 h-5" />
-              <span>Training Guide</span>
-            </Link>
-            <Link href="/data-collection" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              <span>Data Collection</span>
-            </Link>
-            <div className="border-t border-white/10 my-3"></div>
-            <Link href="/assets" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <FolderIcon className="w-5 h-5" />
-              <span>Assets</span>
-            </Link>
-            <Link href="/models" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <CpuChipIcon className="w-5 h-5" />
-              <span>Models</span>
-            </Link>
-            <Link href="/settings" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <Cog6ToothIcon className="w-5 h-5" />
-              <span>Settings</span>
-            </Link>
-            <div className="border-t border-white/10 my-3"></div>
-            <Link href="/monitoring" 
-              className="flex items-center space-x-3 px-4 py-3 text-gray-300 hover:bg-white/5 rounded-xl transition-all">
-              <ChartBarIcon className="w-5 h-5" />
-              <span>Monitoring</span>
-            </Link>
-          </nav>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto">
-          <div className="max-w-6xl mx-auto px-8 py-16">
-            {/* Hero Section */}
-            <div className="text-center mb-16">
-              <h2 className="text-6xl font-bold mb-6">
-                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  AI Generator
-                </span>
-              </h2>
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                A comprehensive platform for creating stunning images and videos with cutting-edge AI technology.
-              </p>
-            </div>
-
-            {/* Features Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  onClick={() => router.push(feature.path)}
-                  className="glass-effect rounded-apple-lg p-6 cursor-pointer card-hover group"
-                >
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} p-3 mb-4 group-hover:scale-110 transition-transform`}>
-                    <feature.icon className="w-full h-full text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">
-                    {feature.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Features List */}
-            <div className="glass-effect rounded-apple-lg p-8">
-              <h3 className="text-2xl font-semibold text-white mb-6">Features</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
-                  <p className="text-gray-300">Advanced text-to-image generation with LoRA support</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
-                  <p className="text-gray-300">Text and image to video conversion</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-green-500 mt-2"></div>
-                  <p className="text-gray-300">Inpainting and outpainting capabilities</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2"></div>
-                  <p className="text-gray-300">Image upscaling and enhancement</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-pink-500 mt-2"></div>
-                  <p className="text-gray-300">Node-based workflow editor (Lab Mode)</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-indigo-500 mt-2"></div>
-                  <p className="text-gray-300">Custom model training (LoRA/DreamBooth)</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-red-500 mt-2"></div>
-                  <p className="text-gray-300">Dataset management and organization</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-cyan-500 mt-2"></div>
-                  <p className="text-gray-300">Multi-format file upload support</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-orange-500 mt-2"></div>
-                  <p className="text-gray-300">Asset library with tagging and search</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2"></div>
-                  <p className="text-gray-300">Project management and templates</p>
-                </div>
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              onClick={() => router.push(feature.path)}
+              className="glass-effect rounded-apple-lg p-6 cursor-pointer card-hover group border border-white/10"
+            >
+              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} p-3 mb-4 group-hover:scale-110 transition-transform`}>
+                <feature.icon className="w-full h-full text-white" />
               </div>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                {feature.title}
+              </h3>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                {feature.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Features List */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="glass-effect rounded-apple-lg p-8 border border-white/10"
+        >
+          <h3 className="text-2xl font-semibold text-white mb-6">Fonctionnalités</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
+              <p className="text-gray-300">Génération avancée texte vers image avec support LoRA</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
+              <p className="text-gray-300">Conversion texte et image vers vidéo</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-green-500 mt-2"></div>
+              <p className="text-gray-300">Capacités d'inpainting et d'outpainting</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-yellow-500 mt-2"></div>
+              <p className="text-gray-300">Amélioration et upscaling d'images</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-pink-500 mt-2"></div>
+              <p className="text-gray-300">Éditeur de workflow basé sur des nœuds (Mode Lab)</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-indigo-500 mt-2"></div>
+              <p className="text-gray-300">Entraînement de modèles personnalisés (LoRA/DreamBooth)</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-red-500 mt-2"></div>
+              <p className="text-gray-300">Gestion et organisation des ensembles de données</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-cyan-500 mt-2"></div>
+              <p className="text-gray-300">Support de téléchargement multi-formats</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-orange-500 mt-2"></div>
+              <p className="text-gray-300">Bibliothèque de ressources avec tags et recherche</p>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2"></div>
+              <p className="text-gray-300">Gestion de projets et modèles</p>
             </div>
           </div>
-        </main>
+        </motion.div>
       </div>
-    </div>
+    </Layout>
   )
 }

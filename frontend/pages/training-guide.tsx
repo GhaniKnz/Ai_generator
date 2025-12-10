@@ -18,11 +18,11 @@ export default function TrainingGuide() {
   const [activeSection, setActiveSection] = useState('overview')
 
   const sections = [
-    { id: 'overview', name: 'Overview', icon: BookOpenIcon },
-    { id: 'types', name: 'Training Types', icon: BeakerIcon },
-    { id: 'parameters', name: 'Parameters', icon: Cog6ToothIcon },
-    { id: 'use-cases', name: 'Use Cases', icon: LightBulbIcon },
-    { id: 'best-practices', name: 'Best Practices', icon: AcademicCapIcon }
+    { id: 'overview', name: 'Vue d\'ensemble', icon: BookOpenIcon },
+    { id: 'types', name: 'Types d\'Entraînement', icon: BeakerIcon },
+    { id: 'parameters', name: 'Paramètres', icon: Cog6ToothIcon },
+    { id: 'use-cases', name: 'Cas d\'Utilisation', icon: LightBulbIcon },
+    { id: 'best-practices', name: 'Meilleures Pratiques', icon: AcademicCapIcon }
   ]
 
   return (
@@ -40,15 +40,15 @@ export default function TrainingGuide() {
                 <ArrowLeftIcon className="w-6 h-6" />
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-white">Training Guide</h1>
-                <p className="text-sm text-gray-400">Complete guide to AI model training</p>
+                <h1 className="text-2xl font-bold text-white">Guide d'Entraînement</h1>
+                <p className="text-sm text-gray-400">Guide complet pour l'entraînement de modèles IA</p>
               </div>
             </div>
             <Link
               href="/training"
               className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all"
             >
-              Start Training →
+              Commencer l'Entraînement →
             </Link>
           </div>
         </div>
@@ -95,56 +95,56 @@ export default function TrainingGuide() {
                 <div>
                   <h2 className="text-4xl font-bold mb-4">
                     <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      Training AI Models
+                      Entraînement de Modèles IA
                     </span>
                   </h2>
                   <p className="text-xl text-gray-400">
-                    Learn how to create custom AI models tailored to your specific needs
+                    Apprenez à créer des modèles IA personnalisés adaptés à vos besoins spécifiques
                   </p>
                 </div>
 
                 <div className="glass-effect rounded-apple-lg p-6">
-                  <h3 className="text-2xl font-semibold text-white mb-4">What is Model Training?</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-4">Qu'est-ce que l'Entraînement de Modèle?</h3>
                   <p className="text-gray-300 leading-relaxed mb-4">
-                    Model training is the process of teaching an AI model to understand and replicate specific styles, 
-                    subjects, or concepts. Instead of using generic pre-trained models, you can fine-tune them with your 
-                    own data to create personalized outputs.
+                    L'entraînement de modèle est le processus d'enseignement à un modèle IA pour comprendre et reproduire des styles spécifiques, 
+                    des sujets ou des concepts. Au lieu d'utiliser des modèles pré-entraînés génériques, vous pouvez les affiner avec vos 
+                    propres données pour créer des sorties personnalisées.
                   </p>
                   <p className="text-gray-300 leading-relaxed">
-                    This platform supports three main training approaches: LoRA (Low-Rank Adaptation), DreamBooth, 
-                    and Full Fine-tuning. Each method has different requirements, costs, and use cases.
+                    Cette plateforme prend en charge trois approches d'entraînement principales: LoRA (Low-Rank Adaptation), DreamBooth, 
+                    et Full Fine-tuning. Chaque méthode a des exigences, des coûts et des cas d'utilisation différents.
                   </p>
                 </div>
 
                 <div className="glass-effect rounded-apple-lg p-6">
-                  <h3 className="text-2xl font-semibold text-white mb-4">Why Train Custom Models?</h3>
+                  <h3 className="text-2xl font-semibold text-white mb-4">Pourquoi Entraîner des Modèles Personnalisés?</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
                       <div className="text-3xl mb-2">🎨</div>
-                      <h4 className="text-white font-semibold mb-2">Custom Styles</h4>
+                      <h4 className="text-white font-semibold mb-2">Styles Personnalisés</h4>
                       <p className="text-gray-400 text-sm">
-                        Create unique artistic styles that match your brand or vision
+                        Créez des styles artistiques uniques qui correspondent à votre marque ou à votre vision
                       </p>
                     </div>
                     <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4">
                       <div className="text-3xl mb-2">👤</div>
-                      <h4 className="text-white font-semibold mb-2">Specific Subjects</h4>
+                      <h4 className="text-white font-semibold mb-2">Sujets Spécifiques</h4>
                       <p className="text-gray-400 text-sm">
-                        Train models to recognize and generate specific people, objects, or characters
+                        Entraînez les modèles à reconnaître et générer des personnes, objets ou personnages spécifiques
                       </p>
                     </div>
                     <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
                       <div className="text-3xl mb-2">⚡</div>
-                      <h4 className="text-white font-semibold mb-2">Better Control</h4>
+                      <h4 className="text-white font-semibold mb-2">Meilleur Contrôle</h4>
                       <p className="text-gray-400 text-sm">
-                        Achieve more consistent and predictable results for your use case
+                        Obtenez des résultats plus cohérents et prévisibles pour votre cas d'utilisation
                       </p>
                     </div>
                     <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4">
                       <div className="text-3xl mb-2">💰</div>
-                      <h4 className="text-white font-semibold mb-2">Cost Effective</h4>
+                      <h4 className="text-white font-semibold mb-2">Rentabilité</h4>
                       <p className="text-gray-400 text-sm">
-                        Use smaller, faster models that are optimized for your specific needs
+                        Utilisez des modèles plus petits et plus rapides optimisés pour vos besoins spécifiques
                       </p>
                     </div>
                   </div>
@@ -154,12 +154,12 @@ export default function TrainingGuide() {
                   <div className="flex items-start space-x-3">
                     <ExclamationTriangleIcon className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
                     <div>
-                      <h4 className="text-white font-semibold mb-2">Before You Start</h4>
+                      <h4 className="text-white font-semibold mb-2">Avant de Commencer</h4>
                       <ul className="space-y-2 text-gray-300 text-sm">
-                        <li>• Prepare high-quality training images (at least 10-20 images)</li>
-                        <li>• Ensure images are consistent in style and subject</li>
-                        <li>• Have a clear goal for what you want to achieve</li>
-                        <li>• Understand the computational requirements (GPU recommended)</li>
+                        <li>• Préparez des images d'entraînement de haute qualité (au moins 10-20 images)</li>
+                        <li>• Assurez-vous que les images sont cohérentes en style et en sujet</li>
+                        <li>• Ayez un objectif clair de ce que vous voulez atteindre</li>
+                        <li>• Comprenez les exigences de calcul (GPU recommandé)</li>
                       </ul>
                     </div>
                   </div>
