@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     output_dir: Path = Field(default=Path("outputs"))
     max_parallel_jobs: int = 1
     mock_generation_delay: float = 0.5
+    
+    # AI Generation Settings
+    use_real_ai: bool = Field(default=True, description="Use real AI models instead of mock generation")
+    models_cache_dir: str = Field(default="./models_cache", description="Directory to cache downloaded models")
 
     class Config:
         env_file = ".env"

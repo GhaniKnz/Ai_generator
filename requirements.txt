@@ -24,9 +24,7 @@ httpx>=0.25.0,<1.0.0
 python-dotenv>=1.0.0,<2.0.0
 pyyaml>=6.0.0,<7.0.0
 
-# Optional: Uncomment when ready to integrate AI models
-# AI/ML Libraries (Heavy - install separately when needed)
-# For real PyTorch training integration:
+# AI/ML Libraries (for real image generation)
 torch>=2.0.0,<3.0.0
 torchvision>=0.15.0,<1.0.0
 diffusers>=0.25.0,<1.0.0

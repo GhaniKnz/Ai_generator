@@ -116,52 +116,107 @@ class JobQueue:
         model_name = params.get("model", "stable-diffusion-1.5")
         outputs: List[JobOutput] = []
         
-        # Create a placeholder image
-        from PIL import Image, ImageDraw, ImageFont
-        import random
+        # Check if we should use real AI or mock generation
+        from .config import get_settings
+        settings = get_settings()
         
-        for idx in range(num_outputs):
-            outfile = self.output_dir / f"{job.id}-{idx + 1}.png"
-            
-            # Create a simple image
-            width = params.get('width', 768)
-            height = params.get('height', 768)
-            
-            # Generate random gradient-like background
-            color1 = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            color2 = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            
-            img = Image.new('RGB', (width, height), color1)
-            draw = ImageDraw.Draw(img)
-            
-            # Draw some shapes
-            for _ in range(10):
-                x = random.randint(0, width)
-                y = random.randint(0, height)
-                r = random.randint(20, 100)
-                draw.ellipse((x-r, y-r, x+r, y+r), fill=color2, outline=None)
-            
-            # Add text
+        if settings.use_real_ai:
+            # Use real AI generation
             try:
-                # Try to load a default font, otherwise use default
-                font = ImageFont.load_default()
-            except:
-                font = None
+                from .ai_generator import get_ai_generator
                 
-            text = f"AI Generated\nPrompt: {params.get('prompt')[:30]}...\nModel: {model_name}\nSize: {width}x{height}"
-            draw.text((20, 20), text, fill=(255, 255, 255), font=font)
+                ai_gen = get_ai_generator()
+                
+                # Extract parameters
+                prompt = params.get('prompt', '')
+                negative_prompt = params.get('negative_prompt', None)
+                width = params.get('width', 512)
+                height = params.get('height', 512)
+                steps = params.get('steps', 30)
+                cfg_scale = params.get('cfg_scale', 7.5)
+                seed = params.get('seed', None)
+                
+                # Get model path from database if it's a trained model
+                model_path = None
+                # TODO: Query database for model path if needed
+                
+                # Generate images using real AI
+                images = await ai_gen.generate_images(
+                    prompt=prompt,
+                    model_name=model_name,
+                    model_path=model_path,
+                    negative_prompt=negative_prompt,
+                    num_outputs=num_outputs,
+                    width=width,
+                    height=height,
+                    num_inference_steps=steps,
+                    guidance_scale=cfg_scale,
+                    seed=seed,
+                )
+                
+                # Save generated images
+                for idx, image in enumerate(images):
+                    outfile = self.output_dir / f"{job.id}-{idx + 1}.png"
+                    image.save(outfile)
+                    
+                    relative_path = f"/outputs/{outfile.name}"
+                    outputs.append(JobOutput(index=idx, path=relative_path))
+                    job.progress = (idx + 1) / num_outputs
+                    job.updated_at = datetime.utcnow()
+                
+            except Exception as e:
+                # If real AI fails, log error and fall back to mock
+                import logging
+                logging.error(f"Real AI generation failed: {e}", exc_info=True)
+                job.error = f"AI generation failed: {str(e)}"
+                raise
+        else:
+            # Use mock generation (original code)
+            from PIL import Image, ImageDraw, ImageFont
+            import random
             
-            # Save image
-            img.save(outfile)
-            
-            # Convert absolute path to relative URL path for frontend
-            # Assuming output_dir is 'outputs' and served at /outputs
-            relative_path = f"/outputs/{outfile.name}"
-            
-            await asyncio.sleep(self.delay)
-            outputs.append(JobOutput(index=idx, path=relative_path))
-            job.progress = (idx + 1) / num_outputs
-            job.updated_at = datetime.utcnow()
+            for idx in range(num_outputs):
+                outfile = self.output_dir / f"{job.id}-{idx + 1}.png"
+                
+                # Create a simple image
+                width = params.get('width', 768)
+                height = params.get('height', 768)
+                
+                # Generate random gradient-like background
+                color1 = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                color2 = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                
+                img = Image.new('RGB', (width, height), color1)
+                draw = ImageDraw.Draw(img)
+                
+                # Draw some shapes
+                for _ in range(10):
+                    x = random.randint(0, width)
+                    y = random.randint(0, height)
+                    r = random.randint(20, 100)
+                    draw.ellipse((x-r, y-r, x+r, y+r), fill=color2, outline=None)
+                
+                # Add text
+                try:
+                    # Try to load a default font, otherwise use default
+                    font = ImageFont.load_default()
+                except:
+                    font = None
+                    
+                text = f"AI Generated\nPrompt: {params.get('prompt')[:30]}...\nModel: {model_name}\nSize: {width}x{height}"
+                draw.text((20, 20), text, fill=(255, 255, 255), font=font)
+                
+                # Save image
+                img.save(outfile)
+                
+                # Convert absolute path to relative URL path for frontend
+                relative_path = f"/outputs/{outfile.name}"
+                
+                await asyncio.sleep(self.delay)
+                outputs.append(JobOutput(index=idx, path=relative_path))
+                job.progress = (idx + 1) / num_outputs
+                job.updated_at = datetime.utcnow()
+        
         job.outputs = outputs
 
     async def _run_text_to_video(self, job: JobState) -> None:
