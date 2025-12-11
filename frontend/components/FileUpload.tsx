@@ -1,6 +1,15 @@
 import { useState, useRef, DragEvent } from 'react'
 import { CloudArrowUpIcon, DocumentIcon, PhotoIcon, VideoCameraIcon, MusicalNoteIcon, ArchiveBoxIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
+// File type descriptions for UI
+const FILE_TYPE_DESCRIPTIONS = {
+  images: 'Images (PNG, JPG, GIF, etc.)',
+  videos: 'Videos (MP4, AVI, MOV, etc.)',
+  audio: 'Audio (WAV, MP3, etc.)',
+  archives: 'Archives (ZIP, RAR, etc.)',
+  csv: 'CSV files for labels'
+}
+
 interface FileUploadProps {
   onUploadComplete?: (files: UploadedFile[]) => void
   onUploadError?: (error: string) => void
@@ -8,6 +17,7 @@ interface FileUploadProps {
   multiple?: boolean
   maxSizeMB?: number
   extractArchives?: boolean
+  datasetId?: number
 }
 
 interface UploadedFile {
@@ -16,6 +26,13 @@ interface UploadedFile {
   size: number
   type: string
   extracted_files?: string[]
+  csv_data?: {
+    total_rows: number
+    image_column: string
+    label_column: string
+    mappings: { [key: string]: string }
+    columns: string[]
+  }
   error?: string
 }
 
@@ -28,8 +45,9 @@ export default function FileUpload({
   onUploadError,
   acceptedTypes = [],
   multiple = true,
-  maxSizeMB = 100,
-  extractArchives = true
+  maxSizeMB = 5000,
+  extractArchives = true,
+  datasetId
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -108,18 +126,49 @@ export default function FileUpload({
       formData.append('files', file)
     })
     formData.append('extract_archives', extractArchives.toString())
+    if (datasetId) {
+      formData.append('dataset_id', datasetId.toString())
+    }
 
     try {
-      const response = await fetch('/api/uploads/batch', {
-        method: 'POST',
-        body: formData
+      const xhr = new XMLHttpRequest()
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = (e.loaded / e.total) * 100
+          setUploadProgress(percentComplete)
+        }
       })
 
-      if (!response.ok) {
-        throw new Error('Upload failed')
-      }
+      // Handle completion
+      const uploadPromise = new Promise<UploadedFile[]>((resolve, reject) => {
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const results = JSON.parse(xhr.responseText)
+              resolve(results)
+            } catch (e) {
+              reject(new Error('Failed to parse response'))
+            }
+          } else {
+            reject(new Error(`Upload failed with status ${xhr.status}`))
+          }
+        })
 
-      const results: UploadedFile[] = await response.json()
+        xhr.addEventListener('error', () => {
+          reject(new Error('Network error during upload'))
+        })
+
+        xhr.addEventListener('abort', () => {
+          reject(new Error('Upload cancelled'))
+        })
+      })
+
+      xhr.open('POST', '/api/uploads/batch')
+      xhr.send(formData)
+
+      const results = await uploadPromise
       
       // Clean up previews
       selectedFiles.forEach(file => {
@@ -198,9 +247,9 @@ export default function FileUpload({
         </p>
         
         <div className="text-sm text-gray-500">
-          <p>Supports: Images (PNG, JPG, GIF, etc.), Videos (MP4, AVI, MOV, etc.)</p>
-          <p>Audio (WAV, MP3, etc.), Archives (ZIP, RAR, etc.)</p>
-          <p className="mt-2">Max file size: {maxSizeMB}MB</p>
+          <p>Supports: {FILE_TYPE_DESCRIPTIONS.images}, {FILE_TYPE_DESCRIPTIONS.videos}</p>
+          <p>{FILE_TYPE_DESCRIPTIONS.audio}, {FILE_TYPE_DESCRIPTIONS.archives}, {FILE_TYPE_DESCRIPTIONS.csv}</p>
+          <p className="mt-2">Max file size: {maxSizeMB}MB per file</p>
         </div>
       </div>
 
