@@ -1,7 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Layout from '@/components/Layout'
 import { SparklesIcon, PhotoIcon } from '@heroicons/react/24/outline'
+
+interface Model {
+  id: number
+  name: string
+  type: string
+  created_at: string
+}
+
+const ASPECT_RATIOS = [
+  { name: 'Carré (1:1)', width: 1024, height: 1024, icon: 'square' },
+  { name: 'Portrait (9:16)', width: 768, height: 1344, icon: 'portrait' },
+  { name: 'Paysage (16:9)', width: 1344, height: 768, icon: 'landscape' },
+  { name: 'Classique (4:3)', width: 1024, height: 768, icon: 'classic' },
+]
 
 export default function TextToImage() {
   const [prompt, setPrompt] = useState('')
@@ -9,6 +23,26 @@ export default function TextToImage() {
   const [generating, setGenerating] = useState(false)
   const [jobId, setJobId] = useState<string | null>(null)
   const [result, setResult] = useState<any>(null)
+  const [models, setModels] = useState<Model[]>([])
+  const [selectedModel, setSelectedModel] = useState('Stable Diffusion 1.5')
+  const [selectedRatio, setSelectedRatio] = useState(ASPECT_RATIOS[0])
+  const [cfgScale, setCfgScale] = useState(7.5)
+  const [steps, setSteps] = useState(30)
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const response = await fetch('/api/models/')
+        if (response.ok) {
+          const data = await response.json()
+          setModels(data)
+        }
+      } catch (error) {
+        console.error('Error fetching models:', error)
+      }
+    }
+    fetchModels()
+  }, [])
 
   const handleGenerate = async () => {
     setGenerating(true)
@@ -20,10 +54,10 @@ export default function TextToImage() {
           prompt,
           negative_prompt: negativePrompt,
           num_outputs: 2,
-          width: 768,
-          height: 768,
-          cfg_scale: 7.5,
-          steps: 30,
+          width: selectedRatio.width,
+          height: selectedRatio.height,
+          cfg_scale: cfgScale,
+          steps: steps,
           style_preset: 'cinematic',
         }),
       })
@@ -113,9 +147,19 @@ export default function TextToImage() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Modèle
                     </label>
-                    <select className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                      <option>Stable Diffusion 1.5</option>
-                      <option>SDXL</option>
+                    <select 
+                      aria-label="Sélectionner un modèle"
+                      value={selectedModel}
+                      onChange={(e) => setSelectedModel(e.target.value)}
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:bg-gray-900 [&>option]:text-white"
+                    >
+                      <option value="Stable Diffusion 1.5">Stable Diffusion 1.5</option>
+                      <option value="SDXL">SDXL</option>
+                      {models.map((model) => (
+                        <option key={model.id} value={model.name}>
+                          {model.name} ({model.type}) - {new Date(model.created_at).toLocaleDateString()}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -123,7 +167,10 @@ export default function TextToImage() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">
                       Style Prédéfini
                     </label>
-                    <select className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select 
+                      aria-label="Sélectionner un style"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:bg-gray-900 [&>option]:text-white"
+                    >
                       <option value="cinematic">Cinématique</option>
                       <option value="anime">Anime</option>
                       <option value="realistic">Réaliste</option>
@@ -133,54 +180,63 @@ export default function TextToImage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Largeur
-                    </label>
-                    <input
-                      type="number"
-                      defaultValue={768}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Hauteur
-                    </label>
-                    <input
-                      type="number"
-                      defaultValue={768}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Format de l'image
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {ASPECT_RATIOS.map((ratio) => (
+                      <button
+                        key={ratio.name}
+                        onClick={() => setSelectedRatio(ratio)}
+                        className={`px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
+                          selectedRatio.name === ratio.name
+                            ? 'bg-blue-500/20 border-blue-500 text-blue-400'
+                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                        }`}
+                      >
+                        {ratio.name}
+                        <div className="text-xs opacity-60 mt-1">{ratio.width}x{ratio.height}</div>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Échelle CFG: 7.5
-                  </label>
+                  <div className="flex justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-300">
+                      Échelle CFG: {cfgScale}
+                    </label>
+                    <span className="text-xs text-gray-500">Fidélité au prompt</span>
+                  </div>
                   <input
+                    aria-label="Échelle CFG"
                     type="range"
-                    min="0"
+                    min="1"
                     max="20"
                     step="0.5"
-                    defaultValue={7.5}
-                    className="w-full"
+                    value={cfgScale}
+                    onChange={(e) => setCfgScale(parseFloat(e.target.value))}
+                    className="w-full accent-blue-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Étapes: 30
-                  </label>
+                  <div className="flex justify-between mb-2">
+                    <label className="block text-sm font-medium text-gray-300">
+                      Étapes: {steps}
+                    </label>
+                    <span className="text-xs text-gray-500">Qualité du rendu</span>
+                  </div>
                   <input
+                    aria-label="Nombre d'étapes"
                     type="range"
                     min="10"
                     max="100"
-                    defaultValue={30}
-                    className="w-full"
+                    step="1"
+                    value={steps}
+                    onChange={(e) => setSteps(parseInt(e.target.value))}
+                    className="w-full accent-blue-500"
                   />
                 </div>
 
@@ -239,10 +295,24 @@ export default function TextToImage() {
                       transition={{ delay: index * 0.1 }}
                       className="glass-effect border border-white/10 p-4 rounded-xl"
                     >
-                      <div className="aspect-square bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-lg mb-2 flex items-center justify-center">
-                        <p className="text-gray-400">Image {index + 1}</p>
+                      <div className="relative rounded-lg overflow-hidden mb-2 bg-gray-900/50">
+                        <img 
+                          src={output.path} 
+                          alt={`Généré: ${prompt}`}
+                          className="w-full h-auto object-contain"
+                        />
                       </div>
-                      <p className="text-sm text-gray-400">Chemin: {output.path}</p>
+                      <div className="flex justify-between items-center mt-2">
+                        <p className="text-sm text-gray-400">Image {index + 1}</p>
+                        <a 
+                          href={output.path} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                        >
+                          Ouvrir / Télécharger
+                        </a>
+                      </div>
                     </motion.div>
                   ))}
                 </div>

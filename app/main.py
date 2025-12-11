@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from .config import Settings, get_settings
 from .database import init_db
@@ -35,6 +36,10 @@ def create_app(settings: Settings, queue: JobQueue) -> FastAPI:
     app.include_router(suggestions.router, prefix=settings.api_prefix)
     app.include_router(monitoring.router, prefix=settings.api_prefix)
     app.include_router(uploads.router, prefix=settings.api_prefix)
+
+    # Mount uploads directory for static access
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+    app.mount("/outputs", StaticFiles(directory="outputs"), name="outputs")
 
     @app.on_event("startup")
     async def startup_event() -> None:

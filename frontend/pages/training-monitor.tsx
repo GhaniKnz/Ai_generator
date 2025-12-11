@@ -66,6 +66,9 @@ interface TrainingProgress {
   current_step: number | null
   loss: number | null
   current_image: string | null
+  analyzed_images?: number
+  total_images?: number
+  current_label?: string
   last_update: string | null
   recent_logs: string[]
   config: any
@@ -178,6 +181,7 @@ export default function TrainingMonitor() {
           {/* Job Selector */}
           <div className="flex items-center space-x-3">
             <select
+              aria-label="Sélectionner une tâche d'entraînement"
               value={selectedJobId || ''}
               onChange={(e) => setSelectedJobId(e.target.value)}
               className="px-4 py-2 glass-effect border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors"
@@ -202,8 +206,10 @@ export default function TrainingMonitor() {
                 transition={{ delay: 0.1 }}
                 className="glass-effect rounded-apple-lg p-6 border border-white/10"
               >
-                <div className="text-sm text-gray-400 mb-2">Époque Actuelle</div>
-                <div className="text-3xl font-bold text-blue-400">{currentEpoch} / {totalEpochs}</div>
+                <div className="text-sm text-gray-400 mb-2">Images Analysées</div>
+                <div className="text-3xl font-bold text-blue-400">
+                  {jobProgress?.analyzed_images || 0} / {jobProgress?.total_images || '?'}
+                </div>
               </motion.div>
 
               <motion.div
@@ -278,6 +284,13 @@ export default function TrainingMonitor() {
                               <span className="text-sm">Analyse...</span>
                             </div>
                           </div>
+                          {jobProgress?.current_label && (
+                            <div className="mt-2">
+                              <span className="px-2 py-1 bg-blue-500/20 border border-blue-500/30 rounded text-xs text-blue-300">
+                                Label: {jobProgress.current_label}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </motion.div>
                     ) : (

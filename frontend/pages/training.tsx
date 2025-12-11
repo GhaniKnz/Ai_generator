@@ -431,6 +431,7 @@ export default function Training() {
                     Dataset ID *
                   </label>
                   <input
+                    aria-label="Dataset ID"
                     type="number"
                     value={newJob.dataset_id}
                     onChange={(e) => setNewJob({...newJob, dataset_id: parseInt(e.target.value)})}
@@ -443,6 +444,7 @@ export default function Training() {
                     Base Model ID *
                   </label>
                   <input
+                    aria-label="Base Model ID"
                     type="number"
                     value={newJob.base_model_id}
                     onChange={(e) => setNewJob({...newJob, base_model_id: parseInt(e.target.value)})}
@@ -456,6 +458,7 @@ export default function Training() {
                   Training Type *
                 </label>
                 <select
+                  aria-label="Training Type"
                   value={newJob.type}
                   onChange={(e) => setNewJob({...newJob, type: e.target.value})}
                   className="w-full px-4 py-2 glass-effect border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors"
@@ -471,6 +474,7 @@ export default function Training() {
                   Output Name *
                 </label>
                 <input
+                  aria-label="Output Name"
                   type="text"
                   value={newJob.output_name}
                   onChange={(e) => setNewJob({...newJob, output_name: e.target.value})}
@@ -488,6 +492,7 @@ export default function Training() {
                       Learning Rate
                     </label>
                     <input
+                      aria-label="Learning Rate"
                       type="number"
                       step="0.00001"
                       value={newJob.learning_rate}
@@ -501,6 +506,7 @@ export default function Training() {
                       Batch Size
                     </label>
                     <input
+                      aria-label="Batch Size"
                       type="number"
                       value={newJob.batch_size}
                       onChange={(e) => setNewJob({...newJob, batch_size: parseInt(e.target.value)})}
@@ -513,6 +519,7 @@ export default function Training() {
                       Number of Epochs
                     </label>
                     <input
+                      aria-label="Number of Epochs"
                       type="number"
                       value={newJob.num_epochs}
                       onChange={(e) => setNewJob({...newJob, num_epochs: parseInt(e.target.value)})}
@@ -525,6 +532,7 @@ export default function Training() {
                       LoRA Rank
                     </label>
                     <input
+                      aria-label="LoRA Rank"
                       type="number"
                       value={newJob.lora_rank}
                       onChange={(e) => setNewJob({...newJob, lora_rank: parseInt(e.target.value)})}

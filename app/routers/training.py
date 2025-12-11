@@ -271,6 +271,9 @@ async def get_training_progress(
         "current_step": metrics.get("current_step"),
         "loss": metrics.get("loss"),
         "current_image": metrics.get("current_image"),
+        "analyzed_images": metrics.get("analyzed_images"),
+        "total_images": metrics.get("total_images"),
+        "current_label": metrics.get("current_label"),
         "last_update": metrics.get("last_update"),
         "recent_logs": logs[-10:],  # Last 10 log messages
         "config": job.config

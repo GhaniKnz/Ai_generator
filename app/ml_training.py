@@ -34,7 +34,10 @@ class TrainingEngine:
         epoch: Optional[int] = None,
         step: Optional[int] = None,
         loss: Optional[float] = None,
-        image_path: Optional[str] = None
+        image_path: Optional[str] = None,
+        analyzed_images: Optional[int] = None,
+        total_images: Optional[int] = None,
+        current_label: Optional[str] = None
     ):
         """Update training progress in database"""
         from sqlalchemy import select, update
@@ -46,6 +49,9 @@ class TrainingEngine:
             "current_step": step or self.current_step,
             "loss": loss or self.current_loss,
             "current_image": image_path or self.current_image_path,
+            "analyzed_images": analyzed_images,
+            "total_images": total_images,
+            "current_label": current_label,
             "last_update": datetime.utcnow().isoformat()
         }
         
@@ -122,10 +128,47 @@ class TrainingEngine:
             output_path = Path(output_dir)
             output_path.mkdir(parents=True, exist_ok=True)
             
+            # Find images
+            image_extensions = {'.jpg', '.jpeg', '.png', '.webp'}
+            images = []
+            dataset_path_obj = Path(dataset_path)
+            
+            if dataset_path_obj.exists():
+                for ext in image_extensions:
+                    images.extend(list(dataset_path_obj.glob(f"*{ext}")))
+            
+            # Fallback to parent if empty (fix for current issue)
+            if not images and dataset_path_obj.parent.exists():
+                for ext in image_extensions:
+                    images.extend(list(dataset_path_obj.parent.glob(f"*{ext}")))
+            
+            if not images:
+                await self.log_message("No images found for training", "warning")
+                images = [Path("placeholder.jpg")]
+            
+            total_images_count = len(images)
+
+            # Load CSV labels if available
+            image_labels = {}
+            try:
+                # Look for CSV metadata in the same directory or parent
+                csv_metadata_files = list(dataset_path_obj.glob("*.json"))
+                if not csv_metadata_files and dataset_path_obj.parent.exists():
+                    csv_metadata_files = list(dataset_path_obj.parent.glob("*.json"))
+                
+                for meta_file in csv_metadata_files:
+                    with open(meta_file, 'r') as f:
+                        data = json.load(f)
+                        if 'mappings' in data:
+                            image_labels.update(data['mappings'])
+            except Exception as e:
+                await self.log_message(f"Failed to load labels: {str(e)}", "warning")
+            
             # TODO: Integrate actual PyTorch training loop
             # For now, simulate training with progress updates
             
-            total_steps = num_epochs * 100  # Assuming 100 steps per epoch
+            steps_per_epoch = max(1, (total_images_count + batch_size - 1) // batch_size)
+            total_steps = num_epochs * steps_per_epoch
             
             for epoch in range(num_epochs):
                 if self.stop_requested:
@@ -135,36 +178,54 @@ class TrainingEngine:
                 self.current_epoch = epoch + 1
                 epoch_loss = 0.0
                 
-                for step in range(100):  # Simulated steps per epoch
+                for step in range(steps_per_epoch):  # Simulated steps per epoch
                     if self.stop_requested:
                         break
                     
                     self.current_step = step + 1
                     
                     # Simulate loss (in real impl, this comes from model.backward())
-                    self.current_loss = 1.0 / (epoch + 1) + 0.1 * (1 - step / 100)
+                    self.current_loss = 1.0 / (epoch + 1) + 0.1 * (1 - step / steps_per_epoch)
                     epoch_loss += self.current_loss
                     
                     # Simulate image being processed
-                    self.current_image_path = f"{dataset_path}/image_{step % 20}.jpg"
+                    img_idx = (step * batch_size) % total_images_count
+                    current_img_path = images[img_idx]
+                    
+                    # Get label for current image
+                    current_label = image_labels.get(current_img_path.name, "No Label")
+                    
+                    # Convert to path relative to CWD for frontend
+                    try:
+                        rel_path = current_img_path.relative_to(Path.cwd())
+                        self.current_image_path = f"/{rel_path}".replace("\\", "/")
+                    except ValueError:
+                        # Fallback if not relative
+                        self.current_image_path = f"/uploads/image/{current_img_path.name}"
                     
                     # Calculate progress
-                    total_progress = ((epoch * 100) + step) / total_steps
+                    current_total_step = (epoch * steps_per_epoch) + step
+                    total_progress = current_total_step / total_steps
                     
-                    # Update every 10 steps
-                    if step % 10 == 0:
+                    analyzed_count = (epoch * total_images_count) + min((step + 1) * batch_size, total_images_count)
+                    
+                    # Update every few steps
+                    if step % 5 == 0 or step == steps_per_epoch - 1:
                         await self.update_progress(
                             progress=total_progress,
                             epoch=self.current_epoch,
                             step=self.current_step,
                             loss=self.current_loss,
-                            image_path=self.current_image_path
+                            image_path=self.current_image_path,
+                            analyzed_images=analyzed_count,
+                            total_images=total_images_count * num_epochs,
+                            current_label=current_label
                         )
                     
                     # Simulate training time
                     await asyncio.sleep(0.1)
                 
-                avg_epoch_loss = epoch_loss / 100
+                avg_epoch_loss = epoch_loss / steps_per_epoch
                 await self.log_message(
                     f"Epoch {epoch + 1}/{num_epochs} completed - Avg Loss: {avg_epoch_loss:.4f}"
                 )

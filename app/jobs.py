@@ -114,22 +114,51 @@ class JobQueue:
         params = job.params
         num_outputs = params.get("num_outputs", 1)
         outputs: List[JobOutput] = []
+        
+        # Create a placeholder image
+        from PIL import Image, ImageDraw, ImageFont
+        import random
+        
         for idx in range(num_outputs):
-            outfile = self.output_dir / f"{job.id}-{idx + 1}.txt"
-            content = (
-                f"Mock image for job {job.id}\n"
-                f"Type: Text-to-Image\n"
-                f"prompt: {params.get('prompt')}\n"
-                f"negative_prompt: {params.get('negative_prompt')}\n"
-                f"model: {params.get('model')}\n"
-                f"style_preset: {params.get('style_preset')}\n"
-                f"cfg_scale: {params.get('cfg_scale')}, steps: {params.get('steps')}\n"
-                f"size: {params.get('width')}x{params.get('height')}\n"
-                f"lora_models: {params.get('lora_models')}\n"
-            )
-            outfile.write_text(content, encoding="utf-8")
+            outfile = self.output_dir / f"{job.id}-{idx + 1}.png"
+            
+            # Create a simple image
+            width = params.get('width', 768)
+            height = params.get('height', 768)
+            
+            # Generate random gradient-like background
+            color1 = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            color2 = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            
+            img = Image.new('RGB', (width, height), color1)
+            draw = ImageDraw.Draw(img)
+            
+            # Draw some shapes
+            for _ in range(10):
+                x = random.randint(0, width)
+                y = random.randint(0, height)
+                r = random.randint(20, 100)
+                draw.ellipse((x-r, y-r, x+r, y+r), fill=color2, outline=None)
+            
+            # Add text
+            try:
+                # Try to load a default font, otherwise use default
+                font = ImageFont.load_default()
+            except:
+                font = None
+                
+            text = f"AI Generated\nPrompt: {params.get('prompt')[:30]}...\nModel: {params.get('model', 'Unknown')}\nSize: {width}x{height}"
+            draw.text((20, 20), text, fill=(255, 255, 255), font=font)
+            
+            # Save image
+            img.save(outfile)
+            
+            # Convert absolute path to relative URL path for frontend
+            # Assuming output_dir is 'outputs' and served at /outputs
+            relative_path = f"/outputs/{outfile.name}"
+            
             await asyncio.sleep(self.delay)
-            outputs.append(JobOutput(index=idx, path=str(outfile)))
+            outputs.append(JobOutput(index=idx, path=relative_path))
             job.progress = (idx + 1) / num_outputs
             job.updated_at = datetime.utcnow()
         job.outputs = outputs
