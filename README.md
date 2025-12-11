@@ -2,16 +2,40 @@
 
 A full-featured AI generation platform for creating images, videos, and more, with support for custom models, LoRA fine-tuning, and a node-based workflow editor.
 
+## 🚀 Mode IA Réel Activé!
+
+**Le système utilise maintenant de vrais modèles d'IA (Stable Diffusion)** pour générer des images basées sur vos prompts!
+
+### Installation Rapide du Mode IA
+
+```bash
+# 1. Installer les dépendances IA
+pip install -r requirements.txt
+
+# 2. Vérifier l'installation
+python3 setup_ai.py
+
+# 3. Démarrer le serveur
+uvicorn app.main:app --reload --port 8000
+```
+
+**📖 Guide complet**: Voir [ACTIVATION_MODE_IA.md](ACTIVATION_MODE_IA.md) pour instructions détaillées
+
+### Première Utilisation
+- ⏱️ **Premier démarrage**: 10-30 minutes (téléchargement des modèles ~4-5 GB)
+- ⚡ **Générations suivantes**: 5-15 secondes avec GPU, 2-5 minutes avec CPU
+- 💾 **Espace disque**: ~10 GB pour les modèles
+
 ## Features
 
 ### 🎨 Image Generation
-- **Text-to-Image**: Generate images from text descriptions
+- **Text-to-Image**: Generate images from text descriptions using **real AI models**
 - **Image-to-Image**: Transform existing images with prompts
 - **Inpainting/Outpainting**: Fill or extend image regions
 - **Style Presets**: Cinematic, anime, realistic, illustration, concept art, and more
 - **LoRA Support**: Use custom-trained LoRA models
 - **Advanced Controls**: CFG scale, steps, schedulers, seed control
-- **Multiple Outputs**: Generate up to 4 variations at once
+- **Multiple Outputs**: Generate up to 8 variations at once
 
 ### 🎬 Video Generation
 - **Text-to-Video**: Create videos from text descriptions

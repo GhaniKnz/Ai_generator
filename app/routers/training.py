@@ -94,6 +94,9 @@ async def create_training_job(
         raise HTTPException(status_code=404, detail="Base model not found")
     
     # Create training job
+    config_dict = request.config.model_dump()
+    config_dict['output_name'] = request.output_name  # Add output_name to config
+    
     job = TrainingJob(
         id=str(uuid.uuid4()),
         dataset_id=request.dataset_id,
@@ -101,7 +104,7 @@ async def create_training_job(
         type=request.type,
         status="pending",
         progress=0.0,
-        config=request.config.model_dump(),
+        config=config_dict,
         metrics={},
         logs=[]
     )
@@ -201,7 +204,8 @@ async def start_training_job(
             dataset_path=dataset.path,
             model_path=model.path,
             output_dir=output_dir,
-            db_session=db
+            db_session=db,
+            output_name=job.config.get('output_name')
         )
     )
     

@@ -60,7 +60,7 @@ class TextToImageRequest(BaseModel):
     negative_prompt: Optional[str] = Field(
         None, description="Things to avoid in the output"
     )
-    num_outputs: int = Field(1, ge=1, le=4, description="How many images to generate")
+    num_outputs: int = Field(1, ge=1, le=8, description="How many images to generate")
     height: int = Field(768, ge=64, le=2048)
     width: int = Field(512, ge=64, le=2048)
     aspect_ratio: Optional[AspectRatio] = Field(None, description="Aspect ratio preset")
