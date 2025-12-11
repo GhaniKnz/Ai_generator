@@ -280,7 +280,10 @@ async def update_dataset_count(dataset_id: int, db: AsyncSession):
     dataset = result.scalar_one_or_none()
     
     if not dataset:
-        return  # Skip if dataset doesn't exist
+        # Log warning but don't fail the upload
+        import logging
+        logging.warning(f"Dataset {dataset_id} not found when updating count")
+        return
     
     # Count files in dataset directory using utility functions
     dataset_path = get_dataset_path(dataset_id, dataset.type)
