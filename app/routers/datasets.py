@@ -8,6 +8,7 @@ from sqlalchemy import select, update
 from datetime import datetime
 from ..database import get_db
 from ..models import Dataset
+from ..dataset_utils import get_dataset_path, count_dataset_files
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -65,22 +66,27 @@ async def create_dataset(
     db: AsyncSession = Depends(get_db)
 ) -> DatasetResponse:
     """Create a new dataset in database."""
-    # Create dataset directory
-    dataset_path = Path("uploads") / "datasets" / request.name.replace(" ", "_").lower()
-    dataset_path.mkdir(parents=True, exist_ok=True)
-    
-    # Create dataset in database
+    # Create dataset in database (without path initially)
     dataset = Dataset(
         name=request.name,
         description=request.description,
         type=request.type,
-        path=str(dataset_path),
+        path="",  # Will be updated after we have the ID
         num_items=0,
         tags=request.tags,
         dataset_metadata={}
     )
     
     db.add(dataset)
+    await db.commit()
+    await db.refresh(dataset)
+    
+    # Now create the directory with the actual dataset ID using utility function
+    dataset_path = get_dataset_path(dataset.id, dataset.type)
+    dataset_path.mkdir(parents=True, exist_ok=True)
+    
+    # Update the path in database
+    dataset.path = str(dataset_path)
     await db.commit()
     await db.refresh(dataset)
     
@@ -193,17 +199,9 @@ async def refresh_dataset_count(
     if not dataset:
         raise HTTPException(status_code=404, detail="Dataset not found")
     
-    # Count files in dataset directory
-    dataset_path = Path("uploads") / "image" / f"dataset_{dataset_id}"
-    if not dataset_path.exists():
-        dataset_path = Path("uploads") / "video" / f"dataset_{dataset_id}"
-    
-    file_count = 0
-    if dataset_path.exists():
-        # Count all files recursively, excluding metadata files
-        for file in dataset_path.rglob("*"):
-            if file.is_file() and not file.suffix == '.json':
-                file_count += 1
+    # Count files in dataset directory using utility function
+    dataset_path = get_dataset_path(dataset_id, dataset.type)
+    file_count = count_dataset_files(dataset_path)
     
     # Update database
     stmt = (
