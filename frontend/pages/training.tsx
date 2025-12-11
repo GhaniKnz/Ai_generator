@@ -33,8 +33,24 @@ interface TrainingJob {
   updated_at: string
 }
 
+interface Dataset {
+  id: number
+  name: string
+  type: string
+  num_items: number
+}
+
+interface Model {
+  id: number
+  name: string
+  type: string
+  category: string
+}
+
 export default function Training() {
   const [jobs, setJobs] = useState<TrainingJob[]>([])
+  const [datasets, setDatasets] = useState<Dataset[]>([])
+  const [models, setModels] = useState<Model[]>([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newJob, setNewJob] = useState({
     dataset_id: 1,
@@ -49,6 +65,8 @@ export default function Training() {
 
   useEffect(() => {
     fetchJobs()
+    fetchDatasets()
+    fetchModels()
     const interval = setInterval(fetchJobs, 5000)
     return () => clearInterval(interval)
   }, [])
@@ -62,6 +80,36 @@ export default function Training() {
       }
     } catch (error) {
       console.error('Error fetching training jobs:', error)
+    }
+  }
+
+  const fetchDatasets = async () => {
+    try {
+      const response = await fetch('/api/datasets/')
+      if (response.ok) {
+        const data = await response.json()
+        setDatasets(data)
+        if (data.length > 0 && newJob.dataset_id === 1) {
+          setNewJob(prev => ({ ...prev, dataset_id: data[0].id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching datasets:', error)
+    }
+  }
+
+  const fetchModels = async () => {
+    try {
+      const response = await fetch('/api/models/?category=image')
+      if (response.ok) {
+        const data = await response.json()
+        setModels(data)
+        if (data.length > 0 && newJob.base_model_id === 1) {
+          setNewJob(prev => ({ ...prev, base_model_id: data[0].id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching models:', error)
     }
   }
 
@@ -428,28 +476,50 @@ export default function Training() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Dataset ID *
+                    Dataset *
                   </label>
-                  <input
-                    aria-label="Dataset ID"
-                    type="number"
+                  <select
+                    aria-label="Dataset"
                     value={newJob.dataset_id}
                     onChange={(e) => setNewJob({...newJob, dataset_id: parseInt(e.target.value)})}
-                    className="w-full px-4 py-2 glass-effect border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors"
-                  />
+                    className="w-full px-4 py-2 glass-effect border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors [&>option]:bg-gray-900 [&>option]:text-white"
+                  >
+                    {datasets.length === 0 && (
+                      <option value={1}>No datasets available</option>
+                    )}
+                    {datasets.map((dataset) => (
+                      <option key={dataset.id} value={dataset.id}>
+                        {dataset.name} ({dataset.type}) - {dataset.num_items} items
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {datasets.length === 0 ? 'Create a dataset first' : `${datasets.length} dataset(s) available`}
+                  </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Base Model ID *
+                    Base Model *
                   </label>
-                  <input
-                    aria-label="Base Model ID"
-                    type="number"
+                  <select
+                    aria-label="Base Model"
                     value={newJob.base_model_id}
                     onChange={(e) => setNewJob({...newJob, base_model_id: parseInt(e.target.value)})}
-                    className="w-full px-4 py-2 glass-effect border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors"
-                  />
+                    className="w-full px-4 py-2 glass-effect border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors [&>option]:bg-gray-900 [&>option]:text-white"
+                  >
+                    {models.length === 0 && (
+                      <option value={1}>No models available</option>
+                    )}
+                    {models.map((model) => (
+                      <option key={model.id} value={model.id}>
+                        {model.name} ({model.type})
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {models.length === 0 ? 'Create a base model first' : `${models.length} model(s) available`}
+                  </p>
                 </div>
               </div>
 
