@@ -7,6 +7,7 @@ interface Model {
   id: number
   name: string
   type: string
+  category: string
   created_at: string
 }
 
@@ -32,10 +33,14 @@ export default function TextToImage() {
   useEffect(() => {
     const fetchModels = async () => {
       try {
-        const response = await fetch('/api/models/')
+        const response = await fetch('/api/models/?category=image')
         if (response.ok) {
           const data = await response.json()
           setModels(data)
+          // Set first model as default if available
+          if (data.length > 0) {
+            setSelectedModel(data[0].name)
+          }
         }
       } catch (error) {
         console.error('Error fetching models:', error)
@@ -58,6 +63,7 @@ export default function TextToImage() {
           height: selectedRatio.height,
           cfg_scale: cfgScale,
           steps: steps,
+          model: selectedModel,
           style_preset: 'cinematic',
         }),
       })
@@ -153,14 +159,17 @@ export default function TextToImage() {
                       onChange={(e) => setSelectedModel(e.target.value)}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:bg-gray-900 [&>option]:text-white"
                     >
-                      <option value="Stable Diffusion 1.5">Stable Diffusion 1.5</option>
-                      <option value="SDXL">SDXL</option>
+                      <option value="stable-diffusion-1.5">Stable Diffusion 1.5</option>
+                      <option value="sdxl">SDXL</option>
                       {models.map((model) => (
                         <option key={model.id} value={model.name}>
-                          {model.name} ({model.type}) - {new Date(model.created_at).toLocaleDateString()}
+                          {model.name} ({model.type})
                         </option>
                       ))}
                     </select>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {models.length > 0 ? `${models.length} modèle(s) entraîné(s) disponible(s)` : 'Entraînez un modèle dans /training pour l\'utiliser ici'}
+                    </p>
                   </div>
 
                   <div>

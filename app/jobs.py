@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -17,6 +18,8 @@ from .schemas import (
     TextToVideoRequest,
     UpscaleRequest,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class JobQueue:
@@ -115,7 +118,71 @@ class JobQueue:
         num_outputs = params.get("num_outputs", 1)
         outputs: List[JobOutput] = []
         
-        # Create a placeholder image
+        # Try to use real AI generation if available
+        try:
+            from .ai_generator import get_ai_generator, check_ai_available, MODEL_MAPPING, DEFAULT_MODEL
+            
+            if check_ai_available():
+                logger.info(f"Using real AI generation for job {job.id}")
+                
+                # Get the AI generator
+                generator = get_ai_generator()
+                
+                # Get model name from params
+                model_name = params.get('model', 'stable-diffusion-1.5')
+                
+                # Map to HuggingFace model path
+                model_path = MODEL_MAPPING.get(model_name, None)
+                
+                # Check if it's a trained model (starts with "Trained-")
+                if model_name.startswith('Trained-'):
+                    # For trained models, we'd load from the path in the database
+                    # For now, we'll use the base model as a fallback
+                    logger.warning(f"Trained model {model_name} requested, using base model as fallback")
+                    model_path = DEFAULT_MODEL
+                elif model_path is None:
+                    # Unknown model, use default
+                    logger.warning(f"Unknown model {model_name}, using default {DEFAULT_MODEL}")
+                    model_path = DEFAULT_MODEL
+                
+                # Generate images using real AI
+                images = generator.generate_images(
+                    prompt=params.get('prompt', ''),
+                    negative_prompt=params.get('negative_prompt'),
+                    model_path=model_path,
+                    num_outputs=num_outputs,
+                    width=params.get('width', 512),
+                    height=params.get('height', 512),
+                    num_inference_steps=params.get('steps', 30),
+                    guidance_scale=params.get('cfg_scale', 7.5),
+                    scheduler=params.get('scheduler', 'ddim'),
+                    seed=params.get('seed'),
+                )
+                
+                # Save generated images
+                for idx, image in enumerate(images):
+                    outfile = self.output_dir / f"{job.id}-{idx + 1}.png"
+                    image.save(outfile)
+                    
+                    # Convert to relative URL path
+                    relative_path = f"/outputs/{outfile.name}"
+                    
+                    outputs.append(JobOutput(index=idx, path=relative_path))
+                    job.progress = (idx + 1) / num_outputs
+                    job.updated_at = datetime.utcnow()
+                
+                job.outputs = outputs
+                logger.info(f"Real AI generation completed for job {job.id}")
+                return
+                
+        except ImportError as e:
+            logger.warning(f"AI libraries not available, falling back to placeholder: {e}")
+        except Exception as e:
+            logger.error(f"AI generation failed, falling back to placeholder: {e}")
+        
+        # Fallback to placeholder generation if AI is not available
+        logger.info(f"Using placeholder generation for job {job.id}")
+        
         from PIL import Image, ImageDraw, ImageFont
         import random
         
@@ -147,14 +214,13 @@ class JobQueue:
             except:
                 font = None
                 
-            text = f"AI Generated\nPrompt: {params.get('prompt')[:30]}...\nModel: {params.get('model', 'Unknown')}\nSize: {width}x{height}"
+            text = f"AI Not Available - Placeholder\nPrompt: {params.get('prompt')[:30]}...\nModel: {params.get('model', 'Unknown')}\nSize: {width}x{height}"
             draw.text((20, 20), text, fill=(255, 255, 255), font=font)
             
             # Save image
             img.save(outfile)
             
             # Convert absolute path to relative URL path for frontend
-            # Assuming output_dir is 'outputs' and served at /outputs
             relative_path = f"/outputs/{outfile.name}"
             
             await asyncio.sleep(self.delay)

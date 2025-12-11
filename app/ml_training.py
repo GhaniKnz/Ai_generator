@@ -318,8 +318,8 @@ async def start_training_background(
     Background task to run training.
     This should be called from the training router.
     """
-    from sqlalchemy import update
-    from .models import TrainingJob
+    from sqlalchemy import update, select
+    from .models import TrainingJob, Model
     
     engine = TrainingEngine(job_id, config, db_session)
     
@@ -360,6 +360,40 @@ async def start_training_background(
         )
         await db_session.execute(stmt)
         await db_session.commit()
+        
+        # If training completed successfully, create a new model entry in the database
+        if final_status == "completed" and output_path:
+            # Get the training job to get the output name
+            result = await db_session.execute(
+                select(TrainingJob).where(TrainingJob.id == job_id)
+            )
+            training_job = result.scalar_one_or_none()
+            
+            if training_job:
+                # Create a unique model name using timestamp and job ID
+                from datetime import datetime
+                timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+                model_name = f"Trained-{timestamp}-{job_id[:8]}"
+                
+                # Create a new model in the database
+                new_model = Model(
+                    name=model_name,
+                    type="lora" if training_type == "lora" else training_type,
+                    category="image",
+                    path=output_path,
+                    description=f"Trained model from job {job_id}",
+                    config=config,
+                    is_active=True,
+                    version="1.0"
+                )
+                db_session.add(new_model)
+                await db_session.commit()
+                await db_session.refresh(new_model)
+                
+                await engine.log_message(
+                    f"Model registered in database with ID: {new_model.id} as '{model_name}'",
+                    "success"
+                )
         
     except Exception as e:
         logger.error(f"Training failed for {job_id}: {e}", exc_info=True)
