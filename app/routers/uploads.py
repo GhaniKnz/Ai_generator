@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from ..database import get_db
 from ..models import Dataset
-from ..dataset_utils import get_dataset_path, count_dataset_files
+from ..dataset_utils import get_dataset_path, count_dataset_files, count_total_dataset_items
 
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
@@ -286,8 +286,7 @@ async def update_dataset_count(dataset_id: int, db: AsyncSession):
         return
     
     # Count files in dataset directory using utility functions
-    dataset_path = get_dataset_path(dataset_id, dataset.type)
-    file_count = count_dataset_files(dataset_path)
+    file_count = count_total_dataset_items(dataset_id)
     
     # Update database
     stmt = (

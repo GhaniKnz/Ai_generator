@@ -342,3 +342,10 @@ class TrainingJobResponse(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# ============= Aliases for Workflows =============
+GenerateTextToImageRequest = TextToImageRequest
+GenerateTextToVideoRequest = TextToVideoRequest
+GenerateImageToVideoRequest = ImageToVideoRequest
+

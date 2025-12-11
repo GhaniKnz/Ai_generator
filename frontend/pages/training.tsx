@@ -66,7 +66,9 @@ export default function Training() {
   }
 
   const handleCreateJob = async () => {
+    console.log('Creating job with payload:', newJob)
     try {
+      // Note: The trailing slash is important to avoid 307 redirects from the backend
       const response = await fetch('/api/training/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,9 +91,25 @@ export default function Training() {
       if (response.ok) {
         await fetchJobs()
         setShowCreateModal(false)
+        // Reset form
+        setNewJob({
+          dataset_id: 1,
+          base_model_id: 1,
+          type: 'lora',
+          output_name: '',
+          learning_rate: 0.0001,
+          batch_size: 4,
+          num_epochs: 10,
+          lora_rank: 4
+        })
+      } else {
+        const errorData = await response.json().catch(() => ({ detail: response.statusText }))
+        console.error('Error creating job:', errorData)
+        alert(`Error creating job: ${errorData.detail || response.statusText}\n\nCheck if Dataset ID and Base Model ID exist.`)
       }
     } catch (error) {
       console.error('Error creating training job:', error)
+      alert('Error creating training job. Check console for details.')
     }
   }
 

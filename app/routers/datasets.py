@@ -8,7 +8,7 @@ from sqlalchemy import select, update
 from datetime import datetime
 from ..database import get_db
 from ..models import Dataset
-from ..dataset_utils import get_dataset_path, count_dataset_files
+from ..dataset_utils import get_dataset_path, count_dataset_files, count_total_dataset_items
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -200,8 +200,7 @@ async def refresh_dataset_count(
         raise HTTPException(status_code=404, detail="Dataset not found")
     
     # Count files in dataset directory using utility function
-    dataset_path = get_dataset_path(dataset_id, dataset.type)
-    file_count = count_dataset_files(dataset_path)
+    file_count = count_total_dataset_items(dataset_id)
     
     # Update database
     stmt = (

@@ -351,8 +351,14 @@ export default function TrainingMonitor() {
               >
                 <h3 className="text-xl font-semibold text-white mb-4">Logs d'Entraînement</h3>
                 <div className="bg-black/30 rounded-lg p-4 font-mono text-sm text-gray-300 max-h-64 overflow-y-auto">
-                  {jobProgress.recent_logs.map((log, idx) => (
-                    <div key={idx} className="mb-1">{log}</div>
+                  {jobProgress.recent_logs.map((log: any, idx) => (
+                    <div key={idx} className="mb-1">
+                      {typeof log === 'string' ? log : (
+                        <span className={log.level === 'ERROR' ? 'text-red-400' : log.level === 'WARNING' ? 'text-yellow-400' : 'text-gray-300'}>
+                          [{new Date(log.timestamp * 1000).toLocaleTimeString()}] {log.level}: {log.message}
+                        </span>
+                      )}
+                    </div>
                   ))}
                 </div>
               </motion.div>
