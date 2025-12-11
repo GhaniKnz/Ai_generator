@@ -7,6 +7,7 @@ interface Model {
   id: number
   name: string
   type: string
+  category: string
   created_at: string
 }
 
@@ -17,6 +18,13 @@ const ASPECT_RATIOS = [
   { name: 'Classique (4:3)', width: 1024, height: 768, icon: 'classic' },
 ]
 
+const NUM_IMAGES_OPTIONS = [
+  { label: '1 image', value: 1 },
+  { label: '2 images', value: 2 },
+  { label: '4 images', value: 4 },
+  { label: '8 images', value: 8 },
+]
+
 export default function TextToImage() {
   const [prompt, setPrompt] = useState('')
   const [negativePrompt, setNegativePrompt] = useState('')
@@ -24,8 +32,9 @@ export default function TextToImage() {
   const [jobId, setJobId] = useState<string | null>(null)
   const [result, setResult] = useState<any>(null)
   const [models, setModels] = useState<Model[]>([])
-  const [selectedModel, setSelectedModel] = useState('Stable Diffusion 1.5')
+  const [selectedModel, setSelectedModel] = useState('stable-diffusion-1.5')
   const [selectedRatio, setSelectedRatio] = useState(ASPECT_RATIOS[0])
+  const [numImages, setNumImages] = useState(2)
   const [cfgScale, setCfgScale] = useState(7.5)
   const [steps, setSteps] = useState(30)
 
@@ -53,11 +62,12 @@ export default function TextToImage() {
         body: JSON.stringify({
           prompt,
           negative_prompt: negativePrompt,
-          num_outputs: 2,
+          num_outputs: numImages,
           width: selectedRatio.width,
           height: selectedRatio.height,
           cfg_scale: cfgScale,
           steps: steps,
+          model: selectedModel,
           style_preset: 'cinematic',
         }),
       })
@@ -153,11 +163,11 @@ export default function TextToImage() {
                       onChange={(e) => setSelectedModel(e.target.value)}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:bg-gray-900 [&>option]:text-white"
                     >
-                      <option value="Stable Diffusion 1.5">Stable Diffusion 1.5</option>
-                      <option value="SDXL">SDXL</option>
-                      {models.map((model) => (
+                      <option value="stable-diffusion-1.5">Stable Diffusion 1.5</option>
+                      <option value="sdxl">SDXL</option>
+                      {models.filter(m => m.category === 'image').map((model) => (
                         <option key={model.id} value={model.name}>
-                          {model.name} ({model.type}) - {new Date(model.created_at).toLocaleDateString()}
+                          {model.name} ({model.type})
                         </option>
                       ))}
                     </select>
@@ -165,19 +175,37 @@ export default function TextToImage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Style Prédéfini
+                      Nombre d'Images
                     </label>
                     <select 
-                      aria-label="Sélectionner un style"
+                      aria-label="Nombre d'images"
+                      value={numImages}
+                      onChange={(e) => setNumImages(parseInt(e.target.value))}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:bg-gray-900 [&>option]:text-white"
                     >
-                      <option value="cinematic">Cinématique</option>
-                      <option value="anime">Anime</option>
-                      <option value="realistic">Réaliste</option>
-                      <option value="illustration">Illustration</option>
-                      <option value="concept_art">Concept Art</option>
+                      {NUM_IMAGES_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Style Prédéfini
+                  </label>
+                  <select 
+                    aria-label="Sélectionner un style"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:bg-gray-900 [&>option]:text-white"
+                  >
+                    <option value="cinematic">Cinématique</option>
+                    <option value="anime">Anime</option>
+                    <option value="realistic">Réaliste</option>
+                    <option value="illustration">Illustration</option>
+                    <option value="concept_art">Concept Art</option>
+                  </select>
                 </div>
 
                 <div>
@@ -286,7 +314,7 @@ export default function TextToImage() {
               )}
 
               {result && result.status === 'done' && (
-                <div className="space-y-4">
+                <div className={`grid gap-4 ${result.outputs.length === 1 ? 'grid-cols-1' : result.outputs.length === 2 ? 'grid-cols-2' : 'grid-cols-2'}`}>
                   {result.outputs.map((output: any, index: number) => (
                     <motion.div
                       key={index}

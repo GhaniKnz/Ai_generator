@@ -113,6 +113,7 @@ class JobQueue:
     async def _run_text_to_image(self, job: JobState) -> None:
         params = job.params
         num_outputs = params.get("num_outputs", 1)
+        model_name = params.get("model", "stable-diffusion-1.5")
         outputs: List[JobOutput] = []
         
         # Create a placeholder image
@@ -147,7 +148,7 @@ class JobQueue:
             except:
                 font = None
                 
-            text = f"AI Generated\nPrompt: {params.get('prompt')[:30]}...\nModel: {params.get('model', 'Unknown')}\nSize: {width}x{height}"
+            text = f"AI Generated\nPrompt: {params.get('prompt')[:30]}...\nModel: {model_name}\nSize: {width}x{height}"
             draw.text((20, 20), text, fill=(255, 255, 255), font=font)
             
             # Save image

@@ -312,14 +312,15 @@ async def start_training_background(
     dataset_path: str,
     model_path: str,
     output_dir: str,
-    db_session
+    db_session,
+    output_name: str = None
 ):
     """
     Background task to run training.
     This should be called from the training router.
     """
-    from sqlalchemy import update
-    from .models import TrainingJob
+    from sqlalchemy import update, select
+    from .models import TrainingJob, Model
     
     engine = TrainingEngine(job_id, config, db_session)
     
@@ -360,6 +361,31 @@ async def start_training_background(
         )
         await db_session.execute(stmt)
         await db_session.commit()
+        
+        # Register the trained model in the models table if training completed
+        if final_status == "completed" and output_path:
+            model_name = output_name or f"trained-{training_type}-{job_id[:8]}"
+            
+            # Check if model with this name already exists
+            result = await db_session.execute(
+                select(Model).where(Model.name == model_name)
+            )
+            existing_model = result.scalar_one_or_none()
+            
+            if not existing_model:
+                new_model = Model(
+                    name=model_name,
+                    type=training_type,
+                    category="image",
+                    path=output_path,
+                    description=f"Trained {training_type} model from job {job_id}",
+                    config=config,
+                    is_active=True,
+                    version="1.0"
+                )
+                db_session.add(new_model)
+                await db_session.commit()
+                await engine.log_message(f"Model registered: {model_name}", "success")
         
     except Exception as e:
         logger.error(f"Training failed for {job_id}: {e}", exc_info=True)
