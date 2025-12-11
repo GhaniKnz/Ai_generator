@@ -7,8 +7,14 @@ import csv
 import json
 from pathlib import Path
 from typing import List, Dict, Optional, Any
-from fastapi import APIRouter, File, UploadFile, HTTPException, Form
+from datetime import datetime
+from fastapi import APIRouter, File, UploadFile, HTTPException, Form, Depends
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update
+from ..database import get_db
+from ..models import Dataset
+from ..dataset_utils import get_dataset_path, count_dataset_files
 
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
@@ -184,7 +190,8 @@ def parse_csv_file(csv_path: Path) -> Dict[str, Any]:
 async def upload_file(
     file: UploadFile = File(...),
     extract_archives: bool = Form(default=True),
-    dataset_id: int = Form(default=None)
+    dataset_id: int = Form(default=None),
+    db: AsyncSession = Depends(get_db)
 ) -> FileUploadResponse:
     """
     Upload a file. Supports images, videos, audio, archives, and CSV files.
@@ -252,6 +259,10 @@ async def upload_file(
         with open(metadata_path, 'w') as f:
             json.dump(csv_data, f, indent=2)
     
+    # Update dataset item count if dataset_id is provided
+    if dataset_id:
+        await update_dataset_count(dataset_id, db)
+    
     return FileUploadResponse(
         filename=file.filename,
         path=str(file_path),
@@ -262,11 +273,38 @@ async def upload_file(
     )
 
 
+async def update_dataset_count(dataset_id: int, db: AsyncSession):
+    """Update dataset item count by counting files in the dataset directory."""
+    # Verify dataset exists
+    result = await db.execute(select(Dataset).where(Dataset.id == dataset_id))
+    dataset = result.scalar_one_or_none()
+    
+    if not dataset:
+        # Log warning but don't fail the upload
+        import logging
+        logging.warning(f"Dataset {dataset_id} not found when updating count")
+        return
+    
+    # Count files in dataset directory using utility functions
+    dataset_path = get_dataset_path(dataset_id, dataset.type)
+    file_count = count_dataset_files(dataset_path)
+    
+    # Update database
+    stmt = (
+        update(Dataset)
+        .where(Dataset.id == dataset_id)
+        .values(num_items=file_count, updated_at=datetime.utcnow())
+    )
+    await db.execute(stmt)
+    await db.commit()
+
+
 @router.post("/batch", response_model=List[FileUploadResponse])
 async def upload_multiple_files(
     files: List[UploadFile] = File(...),
     extract_archives: bool = Form(default=True),
-    dataset_id: int = Form(default=None)
+    dataset_id: int = Form(default=None),
+    db: AsyncSession = Depends(get_db)
 ) -> List[FileUploadResponse]:
     """
     Upload multiple files at once.
@@ -275,7 +313,7 @@ async def upload_multiple_files(
     
     for file in files:
         try:
-            result = await upload_file(file, extract_archives, dataset_id)
+            result = await upload_file(file, extract_archives, dataset_id, db)
             results.append(result)
         except HTTPException as e:
             # Continue with other files even if one fails
