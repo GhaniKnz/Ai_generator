@@ -9,6 +9,15 @@ from typing import Optional, List, TYPE_CHECKING, Any
 
 logger = logging.getLogger(__name__)
 
+# Default models
+DEFAULT_MODEL = "runwayml/stable-diffusion-v1-5"
+MODEL_MAPPING = {
+    'stable-diffusion-1.5': 'runwayml/stable-diffusion-v1-5',
+    'Stable Diffusion 1.5': 'runwayml/stable-diffusion-v1-5',
+    'sdxl': 'stabilityai/stable-diffusion-xl-base-1.0',
+    'Stable Diffusion XL': 'stabilityai/stable-diffusion-xl-base-1.0',
+}
+
 # Check if AI libraries are available
 try:
     import torch
@@ -85,7 +94,7 @@ class AIImageGenerator:
         Load a Stable Diffusion pipeline.
         
         Args:
-            model_path: Path or HuggingFace model ID (e.g., 'stabilityai/stable-diffusion-1-5')
+            model_path: Path or HuggingFace model ID (e.g., 'runwayml/stable-diffusion-v1-5')
             force_reload: Force reload even if already cached
             
         Returns:
@@ -100,11 +109,13 @@ class AIImageGenerator:
         
         try:
             # Load the pipeline
+            # Note: Safety checker is disabled for faster loading and to avoid NSFW false positives
+            # In production, consider enabling it or implementing custom content filtering
             pipe = StableDiffusionPipeline.from_pretrained(
                 model_path,
                 torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
                 cache_dir=self.cache_dir,
-                safety_checker=None,  # Disable for faster loading
+                safety_checker=None,
                 requires_safety_checker=False,
             )
             
@@ -135,7 +146,7 @@ class AIImageGenerator:
     def generate_images(
         self,
         prompt: str,
-        model_path: str = "stabilityai/stable-diffusion-1-5",
+        model_path: str = "runwayml/stable-diffusion-v1-5",
         negative_prompt: Optional[str] = None,
         num_outputs: int = 1,
         width: int = 512,

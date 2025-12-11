@@ -120,7 +120,7 @@ class JobQueue:
         
         # Try to use real AI generation if available
         try:
-            from .ai_generator import get_ai_generator, check_ai_available
+            from .ai_generator import get_ai_generator, check_ai_available, MODEL_MAPPING, DEFAULT_MODEL
             
             if check_ai_available():
                 logger.info(f"Using real AI generation for job {job.id}")
@@ -128,24 +128,22 @@ class JobQueue:
                 # Get the AI generator
                 generator = get_ai_generator()
                 
-                # Map model name to HuggingFace model path
+                # Get model name from params
                 model_name = params.get('model', 'stable-diffusion-1.5')
-                model_mapping = {
-                    'stable-diffusion-1.5': 'runwayml/stable-diffusion-v1-5',
-                    'Stable Diffusion 1.5': 'runwayml/stable-diffusion-v1-5',
-                    'sdxl': 'stabilityai/stable-diffusion-xl-base-1.0',
-                    'Stable Diffusion XL': 'stabilityai/stable-diffusion-xl-base-1.0',
-                }
                 
-                # Get the HuggingFace model path
-                model_path = model_mapping.get(model_name, 'runwayml/stable-diffusion-v1-5')
+                # Map to HuggingFace model path
+                model_path = MODEL_MAPPING.get(model_name, None)
                 
                 # Check if it's a trained model (starts with "Trained-")
                 if model_name.startswith('Trained-'):
                     # For trained models, we'd load from the path in the database
                     # For now, we'll use the base model as a fallback
                     logger.warning(f"Trained model {model_name} requested, using base model as fallback")
-                    model_path = 'runwayml/stable-diffusion-v1-5'
+                    model_path = DEFAULT_MODEL
+                elif model_path is None:
+                    # Unknown model, use default
+                    logger.warning(f"Unknown model {model_name}, using default {DEFAULT_MODEL}")
+                    model_path = DEFAULT_MODEL
                 
                 # Generate images using real AI
                 images = generator.generate_images(
