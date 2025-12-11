@@ -168,7 +168,7 @@ export default function TextToImage() {
                       ))}
                     </select>
                     <p className="text-xs text-gray-400 mt-1">
-                      {models.length > 0 ? `${models.length} modèle(s) entraîné(s) disponible(s)` : 'Entraînez un modèle pour l\'utiliser'}
+                      {models.length > 0 ? `${models.length} modèle(s) entraîné(s) disponible(s)` : 'Entraînez un modèle dans /training pour l\'utiliser ici'}
                     </p>
                   </div>
 

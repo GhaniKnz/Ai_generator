@@ -370,9 +370,14 @@ async def start_training_background(
             training_job = result.scalar_one_or_none()
             
             if training_job:
+                # Create a unique model name using timestamp and job ID
+                from datetime import datetime
+                timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+                model_name = f"Trained-{timestamp}-{job_id[:8]}"
+                
                 # Create a new model in the database
                 new_model = Model(
-                    name=f"Trained-{training_job.id[:8]}",  # Use short job ID as name
+                    name=model_name,
                     type="lora" if training_type == "lora" else training_type,
                     category="image",
                     path=output_path,
@@ -386,7 +391,7 @@ async def start_training_background(
                 await db_session.refresh(new_model)
                 
                 await engine.log_message(
-                    f"Model registered in database with ID: {new_model.id}",
+                    f"Model registered in database with ID: {new_model.id} as '{model_name}'",
                     "success"
                 )
         
