@@ -479,13 +479,17 @@ export default function Training() {
                     value={newJob.dataset_id}
                     onChange={(e) => setNewJob({...newJob, dataset_id: parseInt(e.target.value)})}
                     className="w-full px-4 py-2 glass-effect border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors [&>option]:bg-gray-900 [&>option]:text-white"
+                    disabled={datasets.length === 0}
                   >
-                    {datasets.length === 0 && <option value={1}>Dataset ID 1 (Default)</option>}
-                    {datasets.map((dataset) => (
-                      <option key={dataset.id} value={dataset.id}>
-                        {dataset.name} ({dataset.type}, {dataset.num_items} items)
-                      </option>
-                    ))}
+                    {datasets.length === 0 ? (
+                      <option value="">Chargement des datasets...</option>
+                    ) : (
+                      datasets.map((dataset) => (
+                        <option key={dataset.id} value={dataset.id}>
+                          {dataset.name} ({dataset.type}, {dataset.num_items} items)
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 
@@ -498,13 +502,17 @@ export default function Training() {
                     value={newJob.base_model_id}
                     onChange={(e) => setNewJob({...newJob, base_model_id: parseInt(e.target.value)})}
                     className="w-full px-4 py-2 glass-effect border border-white/10 rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors [&>option]:bg-gray-900 [&>option]:text-white"
+                    disabled={models.filter(m => m.type === 'base_model').length === 0}
                   >
-                    {models.length === 0 && <option value={1}>Model ID 1 (Default)</option>}
-                    {models.filter(m => m.type === 'base_model').map((model) => (
-                      <option key={model.id} value={model.id}>
-                        {model.name} ({model.category})
-                      </option>
-                    ))}
+                    {models.filter(m => m.type === 'base_model').length === 0 ? (
+                      <option value="">Chargement des modèles...</option>
+                    ) : (
+                      models.filter(m => m.type === 'base_model').map((model) => (
+                        <option key={model.id} value={model.id}>
+                          {model.name} ({model.category})
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
               </div>
@@ -612,7 +620,7 @@ export default function Training() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleCreateJob}
-                disabled={!newJob.output_name}
+                disabled={!newJob.output_name || datasets.length === 0 || models.filter(m => m.type === 'base_model').length === 0}
                 className="px-6 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Job

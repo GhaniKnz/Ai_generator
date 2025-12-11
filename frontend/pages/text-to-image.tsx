@@ -163,13 +163,17 @@ export default function TextToImage() {
                       onChange={(e) => setSelectedModel(e.target.value)}
                       className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:bg-gray-900 [&>option]:text-white"
                     >
-                      <option value="stable-diffusion-1.5">Stable Diffusion 1.5</option>
-                      <option value="sdxl">SDXL</option>
                       {models.filter(m => m.category === 'image').map((model) => (
                         <option key={model.id} value={model.name}>
                           {model.name} ({model.type})
                         </option>
                       ))}
+                      {models.filter(m => m.category === 'image').length === 0 && (
+                        <>
+                          <option value="stable-diffusion-1.5">Stable Diffusion 1.5</option>
+                          <option value="sdxl">SDXL</option>
+                        </>
+                      )}
                     </select>
                   </div>
 
@@ -314,7 +318,13 @@ export default function TextToImage() {
               )}
 
               {result && result.status === 'done' && (
-                <div className={`grid gap-4 ${result.outputs.length === 1 ? 'grid-cols-1' : result.outputs.length === 2 ? 'grid-cols-2' : 'grid-cols-2'}`}>
+                <div className={`grid gap-4 ${
+                  result.outputs.length === 1 ? 'grid-cols-1' : 
+                  result.outputs.length === 2 ? 'grid-cols-2' : 
+                  result.outputs.length === 4 ? 'grid-cols-2' : 
+                  result.outputs.length >= 8 ? 'grid-cols-2 md:grid-cols-4' : 
+                  'grid-cols-2'
+                }`}>
                   {result.outputs.map((output: any, index: number) => (
                     <motion.div
                       key={index}
