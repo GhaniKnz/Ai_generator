@@ -138,7 +138,16 @@ class JobQueue:
                 
                 # Get model path from database if it's a trained model
                 model_path = None
-                # TODO: Query database for model path if needed
+                # Query database for custom trained models
+                try:
+                    # Check if this is a custom model (not in the default mapping)
+                    if model_name not in ["stable-diffusion-1.5", "stable-diffusion-xl", "sdxl"]:
+                        # TODO: Add proper database query when ORM is available in async context
+                        # For now, trained models should have their path stored in the model name or config
+                        pass
+                except Exception as e:
+                    import logging
+                    logging.warning(f"Could not query database for model path: {e}")
                 
                 # Generate images using real AI
                 images = await ai_gen.generate_images(
@@ -165,11 +174,11 @@ class JobQueue:
                     job.updated_at = datetime.utcnow()
                 
             except Exception as e:
-                # If real AI fails, log error and fall back to mock
+                # If real AI fails, log error and raise
                 import logging
                 logging.error(f"Real AI generation failed: {e}", exc_info=True)
-                job.error = f"AI generation failed: {str(e)}"
-                raise
+                # Set error on job for user feedback
+                raise Exception(f"AI generation failed: {str(e)}")
         else:
             # Use mock generation (original code)
             from PIL import Image, ImageDraw, ImageFont

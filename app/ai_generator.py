@@ -3,6 +3,7 @@ Real AI image generation using Stable Diffusion and related models.
 This module handles actual image generation with PyTorch and Diffusers.
 """
 import logging
+import os
 import torch
 from pathlib import Path
 from typing import List, Optional
@@ -65,7 +66,9 @@ class AIImageGenerator:
                 model_id,
                 torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
                 cache_dir=str(self.cache_dir),
-                safety_checker=None,  # Disable safety checker for faster generation
+                # Safety checker can be configured via environment or kept for safety
+                # Set DISABLE_SAFETY_CHECKER=true in .env to disable
+                safety_checker=None if os.getenv("DISABLE_SAFETY_CHECKER", "false").lower() == "true" else "default",
             )
             
             # Use DPM++ solver for faster generation
